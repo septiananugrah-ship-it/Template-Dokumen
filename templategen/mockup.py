@@ -342,3 +342,128 @@ def doc_preview_pdf(groups, out: Path, title, pkg=None):
                font=font(22, "Regular"), fill=(120, 116, 150))
         pages.append(pg.convert("RGB"))
     pages[0].save(out, save_all=True, append_images=pages[1:], resolution=150)
+
+
+# ---------------------------------------------------------------- media sosial (feed 1:1, story 9:16)
+
+def _grid9(canvas, posts, x, y, size, gap=6):
+    """Kisi 3×3 seperti halaman profil Instagram."""
+    cell = (size - 2 * gap) // 3
+    for i, p in enumerate(posts[:9]):
+        r, c = divmod(i, 3)
+        canvas.paste(p.resize((cell, cell), Image.LANCZOS),
+                     (x + c * (cell + gap), y + r * (cell + gap)))
+
+
+def _phone(canvas, img, x, y, w, radius=36, bezel=14):
+    """Bingkai ponsel sederhana berisi satu gambar story."""
+    h = round(w * 16 / 9)
+    body = Image.new("RGBA", (w + bezel * 2, h + bezel * 2), (0, 0, 0, 0))
+    ImageDraw.Draw(body).rounded_rectangle((0, 0, body.width - 1, body.height - 1),
+                                           radius + bezel, fill=(20, 20, 22, 255))
+    img = img.crop((0, 0, img.width, img.height - 3))  # buang baris tepi hasil pembulatan PDF
+    screen = rounded(img.resize((w, h), Image.LANCZOS), radius)
+    body.alpha_composite(screen, (bezel, bezel))
+    paste_card(canvas, body.convert("RGB"), (x, y), body.width, radius=radius + bezel,
+               shadow=28)
+
+
+FEED_ORDER = [0, 1, 2, 3, 4, 7, 9, 10, 11]
+
+
+def social_cover(pkg, feed, out: Path, size=1080):
+    P = pal(pkg)
+    im = gradient((size, size), P["top"] + (255,), P["bot"] + (255,))
+    d = ImageDraw.Draw(im)
+    pill(d, 70, 64, pkg["badge"], font(26), P["accent"], P["on_accent"])
+    y = 150
+    for line in pkg["headline"]:
+        d.text((70, y), line, font=font(60), fill=P["ink"])
+        y += 70
+    d.text((70, y + 10), pkg["tagline"], font=font(28, "Regular"), fill=P["sub"])
+    g = Image.new("RGB", (560, 560), (255, 255, 255))
+    _grid9(g, [feed[i] for i in FEED_ORDER], 0, 0, 560, gap=5)
+    paste_card(im, g, (70, y + 80), 560, radius=10, shadow=26)
+    im.convert("RGB").save(out, quality=92)
+
+
+def social_theme(pkg, theme, feed, stories, out: Path, size=1080):
+    P = pal(pkg)
+    bg = hex_rgb(theme.colors["lt2"]) if not theme.dark else hex_rgb(theme.colors["dk2"])
+    fg = hex_rgb(theme.colors["dk2"]) if not theme.dark else hex_rgb(theme.colors["lt1"])
+    im = Image.new("RGBA", (size, size), bg + (255,))
+    d = ImageDraw.Draw(im)
+    d.text((70, 60), f"Tema {theme.label}", font=font(56), fill=fg)
+    d.text((70, 136), pkg["short"], font=font(28, "Regular"), fill=fg)
+    g = Image.new("RGB", (600, 600), (255, 255, 255))
+    _grid9(g, [feed[i] for i in FEED_ORDER], 0, 0, 600, gap=5)
+    paste_card(im, g, (70, 230), 600, radius=10, shadow=24)
+    _phone(im, stories[0], 720, 250, 270)
+    im.convert("RGB").save(out, quality=92)
+
+
+def social_contents(pkg, feeds, stories, out: Path, size=1080):
+    P = pal(pkg)
+    im = gradient((size, size), (255, 255, 255, 255), P["top"] + (255,))
+    d = ImageDraw.Draw(im)
+    d.text((70, 60), "Isi Paket", font=font(60), fill=P["ink"])
+    y = 150
+    for feat in pkg["features"]:
+        d.ellipse((72, y + 9, 92, y + 29), fill=P["accent"])
+        d.text((110, y), feat, font=font(28, "SemiBold"), fill=P["ink"])
+        y += 50
+    y += 30
+    n = len(feeds[0])
+    cols = 8
+    gap = 10
+    tw = (size - 140 - gap * (cols - 1)) // cols
+    rows = min(len(feeds), (size - y - 40) // (tw + gap))
+    for r in range(rows):
+        for c in range(cols):
+            p = feeds[r][c % n].resize((tw, tw), Image.LANCZOS)
+            im.paste(p, (70 + c * (tw + gap), y + r * (tw + gap)))
+    im.convert("RGB").save(out, quality=92)
+
+
+def social_banner(pkg, feeds, stories, out: Path, w=1280, h=720):
+    P = pal(pkg)
+    im = gradient((w, h), P["banner"][0] + (255,), P["banner"][1] + (255,))
+    d = ImageDraw.Draw(im)
+    pill(d, 70, 70, pkg["badge"], font(24), (255, 255, 255), P["ink"])
+    y = 150
+    for line in pkg["headline"]:
+        d.text((70, y), line, font=font(56), fill=(255, 255, 255))
+        y += 66
+    for j, line in enumerate(wrap(d, pkg["tagline"], font(26, "Regular"), 520)):
+        d.text((70, y + 16 + j * 36), line, font=font(26, "Regular"), fill=P["soft"])
+    for i in range(3):
+        _phone(im, stories[i][i % len(stories[i])], 600 + i * 215, 130 + (i % 2) * 60, 200,
+               radius=24, bezel=10)
+    im.convert("RGB").save(out, quality=92)
+
+
+def social_preview_pdf(pkg, labels, feeds, stories, out: Path):
+    pages = []
+    W, H = 1754, 1240
+    P = pal(pkg)
+    for label, feed, story in zip(labels, feeds, stories):
+        pg = Image.new("RGBA", (W, H), (255, 255, 255, 255))
+        d = ImageDraw.Draw(pg)
+        d.text((80, 60), pkg["title"], font=font(40), fill=P["ink"])
+        d.text((80, 116), f"Tema {label}", font=font(28, "Regular"), fill=P["sub"])
+        g = Image.new("RGB", (880, 880), (255, 255, 255))
+        _grid9(g, [feed[i] for i in FEED_ORDER], 0, 0, 880, gap=6)
+        paste_card(pg, g, (80, 200), 880, radius=8, shadow=12, border=(225, 225, 235))
+        for i, st in enumerate(story[:3]):
+            st = st.crop((0, 0, st.width, st.height - 3))
+            paste_card(pg, st, (1010 + i * 230, 260), 210, radius=8, shadow=12,
+                       border=(225, 225, 235))
+        wm = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        text_center(ImageDraw.Draw(wm), W / 2, H / 2 - 90, "PRATINJAU", font(150),
+                    (120, 120, 140, 70))
+        pg.alpha_composite(wm.rotate(25, resample=Image.BICUBIC))
+        ImageDraw.Draw(pg).text((80, H - 60), "Pratinjau beresolusi rendah. File asli .pptx "
+                                "bisa diedit penuh.", font=font(22, "Regular"),
+                                fill=(120, 116, 150))
+        pages.append(pg.convert("RGB"))
+    pages[0].save(out, save_all=True, append_images=pages[1:], resolution=150)

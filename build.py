@@ -86,12 +86,14 @@ def build_slides(slug, pkg, out, prod, mk, tmp, fast):
     themes = getattr(content, "THEMES", THEMES)
 
     renders = {}  # (deck, theme) -> list[PIL.Image]
-    for deck_name, _label, specs, meta in content.DECKS:
+    for entry in content.DECKS:
+        deck_name, _label, specs, meta = entry[:4]
+        factory = entry[4] if len(entry) > 4 else Builder
         for t in themes:
             folder = prod / f"Tema {t.label}"
             folder.mkdir(exist_ok=True)
             pptx = folder / f"{deck_name}_{t.key}.pptx"
-            Builder(t, meta).build(specs, pptx)
+            factory(t, meta).build(specs, pptx)
             print("  ✓", pptx.relative_to(out))
             if fast:
                 continue
@@ -103,6 +105,18 @@ def build_slides(slug, pkg, out, prod, mk, tmp, fast):
         return
     for name, body in pkg["docs"].items():
         (prod / name).write_text(body.strip() + "\n", encoding="utf-8")
+    if pkg.get("kind") == "social":
+        feeds = [renders[(content.DECKS[0][0], t.key)] for t in themes]
+        stories = [renders[(content.DECKS[1][0], t.key)] for t in themes]
+        mockup.social_cover(pkg, feeds[0], mk / "01-foto-utama.jpg")
+        mockup.social_banner(pkg, feeds, stories, mk / "02-banner-gumroad.jpg")
+        for i, t in enumerate(themes):
+            mockup.social_theme(pkg, t, feeds[i], stories[i],
+                                mk / f"{i + 3:02d}-tema-{t.key}.jpg")
+        mockup.social_contents(pkg, feeds, stories, mk / f"{len(themes) + 3:02d}-isi-paket.jpg")
+        mockup.social_preview_pdf(pkg, [t.label for t in themes], feeds, stories,
+                                  mk / f"Pratinjau-{pkg['folder']}.pdf")
+        return
     main_deck = content.DECKS[0][0]
     covers = [renders[(main_deck, t.key)][0] for t in themes]
     mockup.cover_square(pkg, covers, mk / "01-foto-utama.jpg")

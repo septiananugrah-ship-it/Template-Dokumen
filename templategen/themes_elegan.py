@@ -174,6 +174,7 @@ class Monokrom(Elegan):
     divider_bg = closing_bg = "dk1"
     divider_sub = "accent5"
     disc_fill = "lt1"
+    hi = "lt1"
 
     def divider(self, slide, num, title, subtitle):
         k.text(slide, 0.8, 1.5, 5, 1.9, num, size=110, color="lt1", font="+mj-lt",
