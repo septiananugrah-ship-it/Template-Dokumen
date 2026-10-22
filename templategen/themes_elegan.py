@@ -515,5 +515,6 @@ KARBON = variant("karbon", "Karbon", dict(_pal("101214", "1A1D21", "23272C", "7D
 THEMES = [Monokrom(), HitamEmas(), Navy(), Batu(), Zaitun()]
 LAPORAN = [KOBALT, BOTOL, PLUM, BAJA, KARBON]
 GURU = [LANGIT, DAUN, SENJA, LAVENDER, KAPUR]
+ORGANISASI = [Marun(), Navy(), Hutan(), INDIGO, BATA]
 PROFIL = [GRAFIT, TEAL, CHAMPAGNE, INDIGO, BATA]
 KULIAH = [Marun(), Slate(), Hutan(), Malam(), Pasir()]

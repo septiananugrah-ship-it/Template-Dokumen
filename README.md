@@ -18,7 +18,7 @@ Semua file dibuat otomatis dari kode Python, jadi desain konsisten dan mudah dip
 | 7 | [Template PPT Company Profile](preview/company_profile/) | 5 tema elegan (Grafit, Teal, Champagne, Indigo, Bata) × 19 slide, PPTX + PDF | ✅ Selesai (v1.0) |
 | 8 | [Template PPT Materi Ajar Guru](preview/materi_ajar/) | Kurikulum Merdeka, 5 tema (Langit, Daun, Senja, Lavender, Papan Kapur) × 18 slide, PPTX + PDF | ✅ Selesai (v1.0) |
 | 9 | [Template PPT Laporan Kerja Bulanan](preview/laporan_kerja/) | 5 tema elegan (Kobalt, Hijau Botol, Plum, Baja, Karbon) × 16 slide, PPTX + PDF | ✅ Selesai (v1.0) |
-| 10 | Template PPT Proposal Kegiatan & LPJ | Organisasi kampus/komunitas, anggaran, rundown | ⏳ Antre |
+| 10 | [Template PPT Proposal Kegiatan & LPJ](preview/proposal_kegiatan/) | Proposal 10 slide + LPJ 9 slide × 5 tema (Marun, Navy, Hutan, Indigo, Bata), PPTX + PDF | ✅ Selesai (v1.0) |
 | 11 | Template PPT Webinar & Seminar | Pembicara, agenda, sesi tanya jawab | ⏳ Antre |
 | – | Notion Planner Kuliah | Ditunda: fokus ke paket PPT | ⏸️ Ditunda |
 
