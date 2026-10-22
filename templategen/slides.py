@@ -656,11 +656,15 @@ class Builder:
         gap = 0.3
         cw = (W - gap * (n - 1)) / n
         h = Y_END - y
+        longest = max(len(v[0]) for v in stats)
+        vsize = 44
+        while vsize > 26 and longest * vsize * 0.0075 > cw - 0.7:  # perkiraan lebar teks
+            vsize -= 2
         for i, (val, label, desc) in enumerate(stats):
             x = X0 + i * (cw + gap)
             t.card(s, x, y, cw, h, name=f"Angka {i + 1}")
-            k.text(s, x + 0.35, y + 0.35, cw - 0.7, 1.1, val, size=44, bold=True,
-                   color=t.primary, font="+mj-lt")
+            k.text(s, x + 0.35, y + 0.35, cw - 0.7, 1.1, val, size=vsize, bold=True,
+                   color=t.primary, font="+mj-lt", anchor="b")
             k.text(s, x + 0.35, y + 1.5, cw - 0.7, 0.4, label, size=13, bold=True,
                    color=t.accent, caps=True, spacing=1.5)
             k.text(s, x + 0.35, y + 1.95, cw - 0.7, h - 2.1, desc, size=14, color=t.text,
@@ -839,4 +843,39 @@ class Builder:
                 if ly < Y_END - 0.3:
                     k.line(s, x + 0.4, ly, x + cw - 0.4, ly, t.grid, 0.75,
                            dash=MSO_LINE_DASH_STYLE.DASH, name="Garis jawaban")
+        return s
+
+    # ------------------------------------------------------------ tambahan laporan kerja
+    def kpi_bars(self, title, rows, kicker=None, notes=None):
+        """KPI: realisasi vs target dengan bilah progres. rows = (nama, realisasi, target, %)."""
+        s, y = self._content(title, kicker)
+        t = self.t
+        name_w, val_w = 3.6, 2.6
+        bar_x = X0 + name_w + val_w
+        bar_w = W - name_w - val_w - 1.1
+        k.text(s, X0, y, name_w, 0.35, "Indikator", size=12, bold=True, color=t.muted,
+               caps=True, spacing=1.5)
+        k.text(s, X0 + name_w, y, val_w, 0.35, "Realisasi / Target", size=12, bold=True,
+               color=t.muted, caps=True, spacing=1.5)
+        k.text(s, bar_x, y, bar_w, 0.35, "Capaian", size=12, bold=True, color=t.muted,
+               caps=True, spacing=1.5)
+        rh = (Y_END - y - 0.5) / len(rows)
+        for i, (name, real, target, pct) in enumerate(rows):
+            yy = y + 0.5 + i * rh
+            k.text(s, X0, yy, name_w, rh, name, size=16, bold=True, color=t.primary,
+                   anchor="m")
+            k.text(s, X0 + name_w, yy, val_w, rh,
+                   [[dict(text=real, bold=True, color=t.primary),
+                     dict(text=f" / {target}", color=t.muted)]], size=15, anchor="m")
+            bh = 0.28
+            by = yy + rh / 2 - bh / 2
+            k.rrect(s, bar_x, by, bar_w, bh, t.surface if not t.dark else "lt2",
+                    radius=bh / 2, name="Bilah latar")
+            fill_w = max(bh, bar_w * min(pct, 100) / 100)
+            k.rrect(s, bar_x, by, fill_w, bh, t.series[0] if pct >= 100 else t.series[1],
+                    radius=bh / 2, name=f"Bilah {pct}%")
+            k.text(s, bar_x + bar_w + 0.1, yy, 1.0, rh, f"{pct}%", size=16, bold=True,
+                   color=t.primary, anchor="m", align="r")
+            if i < len(rows) - 1:
+                k.line(s, X0, yy + rh, X1, yy + rh, t.grid, 0.75, name="Garis")
         return s

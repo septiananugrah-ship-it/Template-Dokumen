@@ -486,7 +486,34 @@ KAPUR = variant("kapur", "Papan Kapur", dict(_pal("17221E", "1F2E28", "26382F", 
                 disc_ink="accent1", divider_bg="dk2", closing_bg="dk2", divider_sub="accent4",
                 hi="accent1")
 
+KOBALT = variant("kobalt", "Kobalt", _pal("172036", "1E3A8A", "EFF2FA", "3B5BC4", "9AAEE6",
+                                          "5F6880", "D0D9F3", "E1E6F6"),
+                 head_font="Calibri", body_font="Calibri", card_radius=0.1, motif="square",
+                 cover_style="split")
+BOTOL = variant("botol", "Hijau Botol", _pal("13261C", "14532D", "EEF4F0", "2F7A4F", "8DBFA0",
+                                              "5E6E64", "CBE2D4", "DDEBE2"),
+                head_font="Calibri", body_font="Calibri", card_radius=0.1, motif="corner",
+                cover_style="framed")
+PLUM = variant("plum", "Plum", _pal("241824", "4A2545", "F5F0F4", "7A4470", "BF97B6", "73666F",
+                                    "E2D0DD", "EDE2EA"),
+               head_font="Cambria", body_font="Calibri", card_radius=0.14, motif="ring",
+               cover_style="split", title_bold=False)
+BAJA = variant("baja", "Baja", _pal("1B232C", "2F3E4E", "F0F3F5", "4F6D8A", "9FB3C6", "66707A",
+                                    "D3DDE6", "E3E8ED"),
+               head_font="Calibri", body_font="Calibri", card_radius=0.0, motif="rule",
+               cover_style="circle")
+KARBON = variant("karbon", "Karbon", dict(_pal("101214", "1A1D21", "23272C", "7DD3C0", "B8C2CC",
+                                                "98A2AD", "3B4148", "2C3136"), lt1="EEF1F4"),
+                 head_font="Calibri", body_font="Calibri", card_radius=0.1, motif="corner",
+                 cover_style="framed", dark=True, bg="dk1", surface="dk2", text="lt1",
+                 primary="lt1", on_accent="dk1", card_line="accent6",
+                 series=("accent1", "accent3", "accent4", "accent5"), photo_fill="dk2",
+                 photo_ink="accent4", badge_fill="accent1", badge_ink="dk1", disc_fill="dk1",
+                 disc_ink="accent1", divider_bg="dk2", closing_bg="dk2", divider_sub="accent4",
+                 hi="accent1")
+
 THEMES = [Monokrom(), HitamEmas(), Navy(), Batu(), Zaitun()]
+LAPORAN = [KOBALT, BOTOL, PLUM, BAJA, KARBON]
 GURU = [LANGIT, DAUN, SENJA, LAVENDER, KAPUR]
 PROFIL = [GRAFIT, TEAL, CHAMPAGNE, INDIGO, BATA]
 KULIAH = [Marun(), Slate(), Hutan(), Malam(), Pasir()]
