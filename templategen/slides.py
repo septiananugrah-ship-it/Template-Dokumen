@@ -879,3 +879,32 @@ class Builder:
             if i < len(rows) - 1:
                 k.line(s, X0, yy + rh, X1, yy + rh, t.grid, 0.75, name="Garis")
         return s
+
+    # ------------------------------------------------------------ tambahan proposal kegiatan
+    def tiers(self, title, tiers, kicker=None, notes=None, featured=1):
+        """Paket sponsor / harga: 3 kolom, kolom tengah disorot."""
+        s, y = self._content(title, kicker)
+        t = self.t
+        n = len(tiers)
+        gap = 0.35
+        cw = (W - gap * (n - 1)) / n
+        h = Y_END - y
+        for i, (name, price, items) in enumerate(tiers):
+            x = X0 + i * (cw + gap)
+            hot = i == featured
+            if hot:
+                k.rrect(s, x, y, cw, h, t.primary if not t.dark else "accent1",
+                        radius=t.card_radius, name=f"Paket {name} (unggulan)")
+                ink, sub = ("lt1", "lt1") if not t.dark else ("dk1", "dk1")
+            else:
+                t.card(s, x, y, cw, h, name=f"Paket {name}")
+                ink, sub = t.primary, t.muted
+            k.text(s, x + 0.4, y + 0.4, cw - 0.8, 0.4, name, size=14, bold=True,
+                   color=sub if not hot else ink, caps=True, spacing=2)
+            k.text(s, x + 0.4, y + 0.85, cw - 0.8, 0.8, price, size=30, bold=True, color=ink,
+                   font="+mj-lt")
+            k.bullets(s, x + 0.4, y + 1.9, cw - 0.8, h - 2.1, items, size=14,
+                      color=ink if hot else t.text,
+                      bullet_color=("lt1" if not t.dark else "dk1") if hot else t.accent,
+                      para_after=8)
+        return s
