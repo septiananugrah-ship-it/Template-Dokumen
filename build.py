@@ -62,6 +62,8 @@ def build_docs(slug, mod, pkg, out, prod, mk, tmp, fast):
             pdf = render.to_pdf(f, f.parent)
             pages += [Image.open(p).convert("RGB")
                       for p in render.to_png(pdf, tmp / f.stem, dpi=110)]
+        if pkg.get("show") and pages:
+            pages = [pages[i] for i in pkg["show"] if i < len(pages)]
         renders.append((label, accent, pages))
     if fast:
         return

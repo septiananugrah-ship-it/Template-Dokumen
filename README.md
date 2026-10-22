@@ -12,7 +12,7 @@ Semua file dibuat otomatis dari kode Python, jadi desain konsisten dan mudah dip
 | 1 | [Template PPT Sidang Skripsi & Seminar Proposal](preview/sidang_skripsi/) | 5 tema × (22 + 17 slide) = 195 slide, PPTX + PDF | ✅ Selesai (v1.0) |
 | 2 | [Template CV ATS & Surat Lamaran](preview/cv_ats/) | 5 desain CV + 5 surat lamaran, Word (.docx) + PDF | ✅ Selesai (v1.0) |
 | 3 | [Template PPT Presentasi Tugas Kuliah](preview/tugas_kuliah/) | 5 tema baru (Ceria, Neo Brutal, Alam, Tekno, Retro) × 20 slide, PPTX + PDF | ✅ Selesai (v1.0) |
-| 4 | Template Laporan Praktikum | Word (.docx), sampul, bab, tabel data | ⏳ Antre |
+| 4 | [Template Laporan Praktikum](preview/laporan_praktikum/) | 4 contoh (Kimia, Biologi, Fisika, Informatika) + 1 versi kosong, Word + PDF, daftar isi otomatis | ✅ Selesai (v1.0) |
 | 5 | Pitch Deck Bisnis / UMKM | 5 tema, slide investor & proposal usaha | ⏳ Antre |
 | 6 | Template Instagram Jualan | Feed & story 1080 px, PPTX bisa diedit | ⏳ Antre |
 | 7 | Notion Planner Kuliah | Template Notion + panduan impor | ⏳ Antre |

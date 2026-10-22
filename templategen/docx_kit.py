@@ -5,7 +5,7 @@ from __future__ import annotations
 from docx import Document
 from docx.enum.section import WD_ORIENT
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT, WD_BREAK
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_TAB_ALIGNMENT, WD_TAB_LEADER
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
@@ -302,3 +302,104 @@ def page_break(doc):
 def set_core(doc, title, author="Template-Dokumen"):
     doc.core_properties.title = title
     doc.core_properties.author = author
+
+
+# ---------------------------------------------------------------- field, seksi, nomor halaman
+
+def add_field(p, instr, result="", size=None, bold=False, color=None):
+    """Field Word (PAGE, TOC, ...). `result` = teks tampilan sebelum diperbarui."""
+    def fld(kind):
+        r = OxmlElement("w:r")
+        fc = OxmlElement("w:fldChar")
+        fc.set(qn("w:fldCharType"), kind)
+        if kind == "begin":
+            fc.set(qn("w:dirty"), "true")
+        r.append(fc)
+        return r
+    p._p.append(fld("begin"))
+    r = OxmlElement("w:r")
+    it = OxmlElement("w:instrText")
+    it.set(qn("xml:space"), "preserve")
+    it.text = f" {instr} "
+    r.append(it)
+    p._p.append(r)
+    p._p.append(fld("separate"))
+    if result:
+        add_run(p, result, size=size, bold=bold, color=color)
+    p._p.append(fld("end"))
+    return p
+
+
+def page_number_format(section, fmt="decimal", start=1):
+    sectPr = section._sectPr
+    pg = sectPr.find(qn("w:pgNumType"))
+    if pg is None:
+        pg = OxmlElement("w:pgNumType")
+        # pgNumType harus sebelum cols/docGrid dll.
+        anchor = None
+        for tag in ("w:cols", "w:formProt", "w:vAlign", "w:noEndnote", "w:titlePg",
+                    "w:textDirection", "w:bidi", "w:rtlGutter", "w:docGrid"):
+            anchor = sectPr.find(qn(tag))
+            if anchor is not None:
+                break
+        if anchor is not None:
+            anchor.addprevious(pg)
+        else:
+            sectPr.append(pg)
+    pg.set(qn("w:fmt"), fmt)
+    pg.set(qn("w:start"), str(start))
+
+
+def footer_page_number(section, size=11, align="c", color=None):
+    section.footer.is_linked_to_previous = False
+    ft = section.footer
+    p = ft.paragraphs[0]
+    p.alignment = ALIGN[align]
+    for r in list(p.runs):
+        r._element.getparent().remove(r._element)
+    add_field(p, "PAGE", "1", size=size, color=color)
+
+
+def blank_footer(section):
+    section.footer.is_linked_to_previous = False
+    for p in section.footer.paragraphs:
+        for r in list(p.runs):
+            r._element.getparent().remove(r._element)
+
+
+def toc(container, entries, width_cm, size=12, line=1.5):
+    """Daftar isi sebagai field TOC Word yang sudah terisi (entries = [(teks, level,
+    halaman)]). Di Word: klik kanan > Update Field untuk memperbarui."""
+    first = True
+    for i, (txt, level, page) in enumerate(entries):
+        p = container.add_paragraph()
+        pf = p.paragraph_format
+        pf.line_spacing = line
+        pf.left_indent = Cm(0.8 * (level - 1))
+        pf.tab_stops.add_tab_stop(Cm(width_cm), WD_TAB_ALIGNMENT.RIGHT, WD_TAB_LEADER.DOTS)
+        if first:
+            r = OxmlElement("w:r")
+            fc = OxmlElement("w:fldChar")
+            fc.set(qn("w:fldCharType"), "begin")
+            r.append(fc)
+            p._p.append(r)
+            r = OxmlElement("w:r")
+            it = OxmlElement("w:instrText")
+            it.set(qn("xml:space"), "preserve")
+            it.text = ' TOC \\o "1-2" \\h \\z \\u '
+            r.append(it)
+            p._p.append(r)
+            r = OxmlElement("w:r")
+            fc = OxmlElement("w:fldChar")
+            fc.set(qn("w:fldCharType"), "separate")
+            r.append(fc)
+            p._p.append(r)
+            first = False
+        add_run(p, txt, size=size, bold=(level == 1))
+        add_run(p, f"\t{page}", size=size)
+        if i == len(entries) - 1:
+            r = OxmlElement("w:r")
+            fc = OxmlElement("w:fldChar")
+            fc.set(qn("w:fldCharType"), "end")
+            r.append(fc)
+            p._p.append(r)
