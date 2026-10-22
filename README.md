@@ -10,7 +10,7 @@ Semua file dibuat otomatis dari kode Python, jadi desain konsisten dan mudah dip
 | # | Paket | Isi | Status |
 |---|-------|-----|--------|
 | 1 | [Template PPT Sidang Skripsi & Seminar Proposal](preview/sidang_skripsi/) | 5 tema × (22 + 17 slide) = 195 slide, PPTX + PDF | ✅ Selesai (v1.0) |
-| 2 | Template CV / Resume ATS | Word + PPTX, beberapa gaya | ⏳ Antre |
+| 2 | [Template CV ATS & Surat Lamaran](preview/cv_ats/) | 5 desain CV + 5 surat lamaran, Word (.docx) + PDF | ✅ Selesai (v1.0) |
 | 3 | Template Presentasi Tugas Kuliah | 5 tema, slide umum (materi, diskusi, kelompok) | ⏳ Antre |
 | 4 | Template Laporan Praktikum | Word (.docx), sampul, bab, tabel data | ⏳ Antre |
 | 5 | Pitch Deck Bisnis / UMKM | 5 tema, slide investor & proposal usaha | ⏳ Antre |
@@ -21,7 +21,7 @@ Semua file dibuat otomatis dari kode Python, jadi desain konsisten dan mudah dip
 
 Setiap paket menghasilkan:
 
-- **ZIP untuk pembeli**: file .pptx yang bisa diedit, versi PDF, `CARA-PAKAI.txt`, `LISENSI.txt`
+- **ZIP untuk pembeli**: file yang bisa diedit (.pptx / .docx), versi PDF, `CARA-PAKAI.txt`, `LISENSI.txt`
 - **Bahan jualan** (`marketing/`): foto produk 1080×1080 (foto utama, per tema, isi paket),
   banner 1280×720 untuk Gumroad, PDF pratinjau bertanda air, dan deskripsi jualan bahasa Indonesia
 
@@ -50,9 +50,10 @@ Hasil ada di `dist/<paket>/`.
 build.py                  # bangun paket -> dist/
 templategen/
   core.py                 # helper bentuk, teks, ikon, grafik, tabel (python-pptx)
+  docx_kit.py             # helper dokumen Word ramah ATS (python-docx)
   themes.py               # 5 tema: Modern, Minimalis, Akademik Biru, Gelap Elegan, Pastel
   slides.py               # tata letak slide isi (agenda, statistik, grafik, Gantt, ...)
-  mockup.py               # foto produk & PDF pratinjau
+  mockup.py               # foto produk & PDF pratinjau (slide 16:9 dan dokumen A4)
   render.py               # PPTX -> PDF -> PNG (LibreOffice + Poppler)
 paket/<nama>/
   content.py              # isi slide

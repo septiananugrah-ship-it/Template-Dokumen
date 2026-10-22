@@ -2,7 +2,7 @@
 
     python build.py                 # semua paket
     python build.py sidang_skripsi  # satu paket
-    python build.py --fast          # tanpa PDF/mockup (cek cepat .pptx saja)
+    python build.py --fast          # tanpa PDF/mockup (cek cepat file sumber saja)
 
 Hasil di dist/<paket>/:
     <Nama>-v<versi>.zip   -> file untuk pembeli (PPTX + PDF + panduan)
@@ -33,8 +33,8 @@ def packages():
 
 
 def build_package(slug, fast=False):
-    pkg = importlib.import_module(f"paket.{slug}.package").PACKAGE
-    content = importlib.import_module(f"paket.{slug}.content")
+    mod = importlib.import_module(f"paket.{slug}.package")
+    pkg = mod.PACKAGE
     out = DIST / slug
     shutil.rmtree(out, ignore_errors=True)
     prod = out / pkg["folder"]
@@ -42,6 +42,45 @@ def build_package(slug, fast=False):
     tmp = out / "_render"
     for d in (prod, mk, tmp):
         d.mkdir(parents=True)
+    if pkg.get("kind") == "docs":
+        build_docs(slug, mod, pkg, out, prod, mk, tmp, fast)
+    else:
+        build_slides(slug, pkg, out, prod, mk, tmp, fast)
+    finish(slug, pkg, out, prod, mk, tmp, fast)
+
+
+def build_docs(slug, mod, pkg, out, prod, mk, tmp, fast):
+    """Paket dokumen (Word): package.make(prod) -> [(label, aksen, [file, ...]), ...]."""
+    groups = mod.make(prod)
+    renders = []
+    for label, accent, files in groups:
+        pages = []
+        for f in files:
+            print("  ✓", f.relative_to(out))
+            if fast:
+                continue
+            pdf = render.to_pdf(f, f.parent)
+            pages += [Image.open(p).convert("RGB")
+                      for p in render.to_png(pdf, tmp / f.stem, dpi=110)]
+        renders.append((label, accent, pages))
+    if fast:
+        return
+    for name, body in pkg["docs"].items():
+        (prod / name).write_text(body.strip() + "\n", encoding="utf-8")
+    firsts = [pages[0] for _, _, pages in renders]
+    mockup.doc_cover_square(pkg, firsts, mk / "01-foto-utama.jpg")
+    mockup.doc_banner(pkg, firsts, mk / "02-banner-gumroad.jpg")
+    for i, (label, accent, pages) in enumerate(renders):
+        mockup.doc_design_square(pkg, label, accent, pages,
+                                 mk / f"{i + 3:02d}-desain-{i + 1}.jpg")
+    rows = [[pages[j] for _, _, pages in renders] for j in range(len(renders[0][2]))]
+    mockup.doc_contents_square(pkg, rows, mk / f"{len(renders) + 3:02d}-isi-paket.jpg")
+    mockup.doc_preview_pdf([(label, pages) for label, _, pages in renders],
+                           mk / f"Pratinjau-{pkg['folder']}.pdf", pkg["title"])
+
+
+def build_slides(slug, pkg, out, prod, mk, tmp, fast):
+    content = importlib.import_module(f"paket.{slug}.content")
 
     renders = {}  # (deck, theme) -> list[PIL.Image]
     for deck_name, _label, specs, meta in content.DECKS:
@@ -57,11 +96,10 @@ def build_package(slug, fast=False):
             pngs = render.to_png(pdf, tmp / f"{deck_name}_{t.key}", dpi=110)
             renders[(deck_name, t.key)] = [Image.open(p).convert("RGB") for p in pngs]
 
-    for name, body in pkg["docs"].items():
-        (prod / name).write_text(body.strip() + "\n", encoding="utf-8")
-
     if fast:
         return
+    for name, body in pkg["docs"].items():
+        (prod / name).write_text(body.strip() + "\n", encoding="utf-8")
     main_deck = content.DECKS[0][0]
     covers = [renders[(main_deck, t.key)][0] for t in THEMES]
     mockup.cover_square(pkg, covers, mk / "01-foto-utama.jpg")
@@ -76,6 +114,11 @@ def build_package(slug, fast=False):
     mockup.preview_pdf([[renders[(main_deck, t.key)][j] for j in pkg["preview"]] for t in THEMES],
                        [t.label for t in THEMES], mk / f"Pratinjau-{pkg['folder']}.pdf",
                        pkg["title"])
+
+
+def finish(slug, pkg, out, prod, mk, tmp, fast):
+    if fast:
+        return
     (mk / "deskripsi-jualan.md").write_text(pkg["description"].strip() + "\n", encoding="utf-8")
     shutil.rmtree(tmp)
 

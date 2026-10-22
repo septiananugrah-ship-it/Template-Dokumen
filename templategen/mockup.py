@@ -207,3 +207,116 @@ def preview_pdf(pages_by_theme, labels, out: Path, title):
                font=font(22, "Regular"), fill=(120, 116, 150))
         pages.append(pg.convert("RGB"))
     pages[0].save(out, save_all=True, append_images=pages[1:], resolution=150)
+
+
+# ---------------------------------------------------------------- dokumen A4 (potret)
+
+def doc_cover_square(pkg, pages, out: Path, size=1080):
+    """Foto utama untuk paket dokumen: judul + deretan halaman A4 bertumpuk."""
+    im = gradient((size, size), BG_TOP + (255,), BG_BOT + (255,))
+    d = ImageDraw.Draw(im)
+    pill(d, 70, 64, pkg["badge"], font(26), ACCENT, (255, 255, 255))
+    y = 150
+    for line in pkg["headline"]:
+        d.text((70, y), line, font=font(64), fill=INK)
+        y += 76
+    d.text((70, y + 10), pkg["tagline"], font=font(30, "Regular"), fill=(90, 86, 120))
+    x = 70
+    f = font(22, "SemiBold")
+    for feat in pkg["chips"]:
+        cw, _ = pill(d, x, y + 70, feat, f, (255, 255, 255), INK, padx=18, pady=10)
+        x += cw + 14
+    n = len(pages)
+    w = 330
+    step = (size - 140 - w) / max(1, n - 1)
+    top = y + 150
+    for i, pg in enumerate(pages):
+        lift = abs(i - (n - 1) / 2) * 26
+        paste_card(im, pg, (round(70 + i * step), round(top + lift)), w, radius=8, shadow=22)
+    im.convert("RGB").save(out, quality=92)
+
+
+def doc_design_square(pkg, label, accent, pages, out: Path, size=1080):
+    """Satu desain: halaman utama besar + halaman pendamping."""
+    acc = hex_rgb(accent)
+    soft = tuple(round(c + (255 - c) * 0.88) for c in acc)
+    im = Image.new("RGBA", (size, size), soft + (255,))
+    d = ImageDraw.Draw(im)
+    d.text((70, 60), label, font=font(56), fill=INK)
+    d.text((70, 136), pkg["short"], font=font(28, "Regular"), fill=(80, 80, 100))
+    if len(pages) > 1:
+        paste_card(im, pages[1], (540, 300), 470, radius=8, shadow=24)
+    paste_card(im, pages[0], (70, 220), 560, radius=8, shadow=30)
+    d.rounded_rectangle((size - 250, size - 82, size - 70, size - 34), 24, fill=acc)
+    text_center(d, size - 160, size - 76, "Bisa diedit", font(24, "SemiBold"), (255, 255, 255))
+    im.convert("RGB").save(out, quality=92)
+
+
+def doc_contents_square(pkg, rows, out: Path, size=1080):
+    """'Isi paket' untuk dokumen: fitur + kisi halaman (satu baris per jenis)."""
+    im = gradient((size, size), (255, 255, 255, 255), BG_TOP + (255,))
+    d = ImageDraw.Draw(im)
+    d.text((70, 60), "Isi Paket", font=font(60), fill=INK)
+    y = 150
+    for feat in pkg["features"]:
+        d.ellipse((72, y + 9, 92, y + 29), fill=ACCENT)
+        d.text((110, y), feat, font=font(28, "SemiBold"), fill=INK)
+        y += 50
+    cols = max(len(r) for r in rows)
+    gap = 20
+    tw = (size - 140 - gap * (cols - 1)) // cols
+    th = round(tw * 297 / 210)
+    avail = size - y - 60
+    if len(rows) * (th + gap) > avail:
+        th = (avail - gap * len(rows)) // len(rows)
+        tw = round(th * 210 / 297)
+    x0 = (size - (cols * tw + (cols - 1) * gap)) // 2
+    for r, row in enumerate(rows):
+        for c, pg in enumerate(row):
+            paste_card(im, pg, (x0 + c * (tw + gap), y + 30 + r * (th + gap)), tw, radius=4,
+                       shadow=10)
+    im.convert("RGB").save(out, quality=92)
+
+
+def doc_banner(pkg, pages, out: Path, w=1280, h=720):
+    im = gradient((w, h), (36, 30, 92, 255), (20, 16, 52, 255))
+    d = ImageDraw.Draw(im)
+    pill(d, 70, 70, pkg["badge"], font(24), ACCENT, (255, 255, 255))
+    y = 150
+    for line in pkg["headline"]:
+        d.text((70, y), line, font=font(58), fill=(255, 255, 255))
+        y += 70
+    for j, line in enumerate(wrap(d, pkg["tagline"], font(26, "Regular"), 520)):
+        d.text((70, y + 16 + j * 36), line, font=font(26, "Regular"), fill=(201, 197, 236))
+    for i, pg in enumerate(pages[:3]):
+        paste_card(im, pg, (680 + i * 150, 90 + i * 40), 330, radius=6, shadow=22)
+    im.convert("RGB").save(out, quality=92)
+
+
+def doc_preview_pdf(groups, out: Path, title):
+    """Satu halaman per desain berisi semua halamannya + tanda air."""
+    pages = []
+    W, H = 1754, 1240
+    for label, imgs in groups:
+        pg = Image.new("RGBA", (W, H), (255, 255, 255, 255))
+        d = ImageDraw.Draw(pg)
+        d.text((80, 60), title, font=font(40), fill=INK)
+        d.text((80, 116), label, font=font(28, "Regular"), fill=(90, 86, 120))
+        n = len(imgs)
+        th = H - 300
+        tw = round(th * 210 / 297)
+        gap = 60
+        x0 = (W - (n * tw + (n - 1) * gap)) // 2
+        for i, im in enumerate(imgs):
+            paste_card(pg, im, (x0 + i * (tw + gap), 190), tw, radius=4, shadow=12,
+                       border=(225, 225, 235))
+        wm = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        wd = ImageDraw.Draw(wm)
+        text_center(wd, W / 2, H / 2 - 90, "PRATINJAU", font(150), (120, 120, 140, 70))
+        wm = wm.rotate(25, resample=Image.BICUBIC)
+        pg.alpha_composite(wm)
+        d = ImageDraw.Draw(pg)
+        d.text((80, H - 60), "Pratinjau beresolusi rendah. File asli bisa diedit penuh.",
+               font=font(22, "Regular"), fill=(120, 116, 150))
+        pages.append(pg.convert("RGB"))
+    pages[0].save(out, save_all=True, append_images=pages[1:], resolution=150)
