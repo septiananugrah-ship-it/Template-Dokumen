@@ -15,12 +15,13 @@ Semua file dibuat otomatis dari kode Python, jadi desain konsisten dan mudah dip
 | 4 | [Template Laporan Praktikum](preview/laporan_praktikum/) | 4 contoh (Kimia, Biologi, Fisika, Informatika) + 1 versi kosong, Word + PDF, daftar isi otomatis | ✅ Selesai (v1.0) |
 | 5 | [Template Pitch Deck Bisnis & UMKM](preview/pitch_deck/) | 5 tema elegan (Monokrom, Hitam Emas, Navy, Batu, Zaitun) × 17 slide, PPTX + PDF | ✅ Selesai (v1.0) |
 | 6 | [Template Instagram Jualan](preview/instagram_jualan/) | 16 feed 1:1 + 6 story 9:16 × 5 tema elegan, PPTX + PDF | ✅ Selesai (v1.0) |
-| 7 | Template PPT Company Profile | Profil perusahaan/UMKM, tema elegan | ⏳ Antre |
+| 7 | [Template PPT Company Profile](preview/company_profile/) | 5 tema elegan (Grafit, Teal, Champagne, Indigo, Bata) × 19 slide, PPTX + PDF | ✅ Selesai (v1.0) |
 | 8 | Template PPT Materi Ajar Guru | Slide pembelajaran SD–SMA, kuis, refleksi | ⏳ Antre |
 | 9 | Template PPT Laporan Kerja Bulanan | KPI, grafik, evaluasi, rencana | ⏳ Antre |
 | 10 | Template PPT Proposal Kegiatan & LPJ | Organisasi kampus/komunitas, anggaran, rundown | ⏳ Antre |
 | 11 | Template PPT Webinar & Seminar | Pembicara, agenda, sesi tanya jawab | ⏳ Antre |
 | – | Notion Planner Kuliah | Ditunda: fokus ke paket PPT | ⏸️ Ditunda |
+
 ## Isi tiap paket
 
 Setiap paket menghasilkan:

@@ -247,9 +247,14 @@ class Builder:
             t.icon_disc(s, ic, x + 0.4, y + 0.4, 0.75, i=i)
             k.text(s, x + 0.4, y + 1.35, cw - 0.8, 0.4, head, size=13, bold=True, color=t.muted,
                    caps=True, spacing=1.5)
-            k.text(s, x + 0.4, y + 1.75, cw - 0.8, 0.8, value, size=28, bold=True,
-                   color=t.primary, font="+mj-lt")
-            k.text(s, x + 0.4, y + 2.6, cw - 0.8, h - 2.8, desc, size=16, color=t.text,
+            # ukuran judul seragam per slide, mengikuti judul terpanjang
+            longest = max(len(it[2]) for it in items)
+            size = 28 if longest * 0.19 <= cw - 0.8 else 24
+            two = longest * 0.145 > cw - 0.8
+            k.text(s, x + 0.4, y + 1.75, cw - 0.8, 1.2 if two else 0.8, value,
+                   size=size, bold=True, color=t.primary, font="+mj-lt", line_spacing=1.0)
+            dy = 3.0 if two else 2.6
+            k.text(s, x + 0.4, y + dy, cw - 0.8, h - dy - 0.2, desc, size=16, color=t.text,
                    line_spacing=1.2)
         return s
 
@@ -636,4 +641,111 @@ class Builder:
                    align="c", caps=True, spacing=1.5)
             k.text(s, x + 0.1, y + ph + 0.9, cw - 0.2, Y_END - (y + ph + 0.9), bio, size=12,
                    color=t.muted, align="c", line_spacing=1.1)
+        return s
+
+    # ------------------------------------------------------------ tambahan company profile
+    def stats4(self, title, stats, lead=None, kicker=None, notes=None):
+        """Empat angka pencapaian besar."""
+        s, y = self._content(title, kicker)
+        t = self.t
+        if lead:
+            k.text(s, X0, y - 0.1, W * 0.7, 0.9, lead, size=16, color=t.muted,
+                   line_spacing=1.3)
+            y += 1.0
+        n = len(stats)
+        gap = 0.3
+        cw = (W - gap * (n - 1)) / n
+        h = Y_END - y
+        for i, (val, label, desc) in enumerate(stats):
+            x = X0 + i * (cw + gap)
+            t.card(s, x, y, cw, h, name=f"Angka {i + 1}")
+            k.text(s, x + 0.35, y + 0.35, cw - 0.7, 1.1, val, size=44, bold=True,
+                   color=t.primary, font="+mj-lt")
+            k.text(s, x + 0.35, y + 1.5, cw - 0.7, 0.4, label, size=13, bold=True,
+                   color=t.accent, caps=True, spacing=1.5)
+            k.text(s, x + 0.35, y + 1.95, cw - 0.7, h - 2.1, desc, size=14, color=t.text,
+                   line_spacing=1.2)
+        return s
+
+    def logos(self, title, names, lead=None, kicker=None, notes=None):
+        """Kisi logo klien/mitra (kotak tempat logo)."""
+        s, y = self._content(title, kicker)
+        t = self.t
+        if lead:
+            k.text(s, X0, y - 0.1, W, 0.6, lead, size=16, color=t.muted)
+            y += 0.7
+        cols = 4
+        rows = (len(names) + cols - 1) // cols
+        gap = 0.3
+        cw = (W - gap * (cols - 1)) / cols
+        ch = (Y_END - y - gap * (rows - 1)) / rows
+        for i, nm in enumerate(names):
+            r, c = divmod(i, cols)
+            x, yy = X0 + c * (cw + gap), y + r * (ch + gap)
+            t.card(s, x, yy, cw, ch, name=f"Logo {nm} (ganti dengan logo)")
+            k.icon(s, t, "building-2", x + cw / 2 - 0.25, yy + ch / 2 - 0.45, 0.5, t.muted)
+            k.text(s, x, yy + ch / 2 + 0.12, cw, 0.4, nm, size=14, bold=True, color=t.muted,
+                   align="c", caps=True, spacing=1.5)
+        return s
+
+    def org_chart(self, title, top, middle, bottom=None, kicker=None, notes=None):
+        """Struktur organisasi 2–3 tingkat dengan garis penghubung."""
+        s, y = self._content(title, kicker)
+        t = self.t
+        bw, bh = 2.7, 0.95
+        levels = [[top], middle] + ([bottom] if bottom else [])
+        gaps = (Y_END - y - bh * len(levels)) / max(1, len(levels) - 1)
+        centers = []
+        for li, row in enumerate(levels):
+            yy = y + li * (bh + gaps)
+            n = len(row)
+            span = W / n
+            cs = []
+            for i, (name, role) in enumerate(row):
+                cx = X0 + span * i + span / 2
+                fill = t.badge_fill if li == 0 and hasattr(t, "badge_fill") else None
+                if li == 0:
+                    box = k.rrect(s, cx - bw / 2, yy, bw, bh, t.primary if not t.dark else
+                                  "accent1", radius=t.card_radius, name=f"Jabatan {role}")
+                    ink, sub = ("lt1", "lt1") if not t.dark else ("dk1", "dk1")
+                else:
+                    t.card(s, cx - bw / 2, yy, bw, bh, name=f"Jabatan {role}")
+                    ink, sub = t.primary, t.muted
+                k.text(s, cx - bw / 2, yy + 0.1, bw, 0.4, role, size=12, bold=True,
+                       color=sub if li else ink, align="c", caps=True, spacing=1)
+                k.text(s, cx - bw / 2, yy + 0.45, bw, 0.4, name, size=15, bold=True,
+                       color=ink, align="c")
+                cs.append((cx, yy))
+            centers.append(cs)
+        for li in range(1, len(centers)):
+            py = centers[li - 1][0][1] + bh
+            cy = centers[li][0][1]
+            mid = py + (cy - py) / 2
+            parents = centers[li - 1]
+            children = centers[li]
+            # garis dari induk (atau bagian tengah tingkat sebelumnya) ke anak
+            for px, _ in parents:
+                k.line(s, px, py, px, mid, t.grid, 1.5, name="Garis struktur")
+            xs = [c[0] for c in children] + [p[0] for p in parents]
+            k.line(s, min(xs), mid, max(xs), mid, t.grid, 1.5, name="Garis struktur")
+            for cx, cyy in children:
+                k.line(s, cx, mid, cx, cyy, t.grid, 1.5, name="Garis struktur")
+        return s
+
+    def contact_map(self, title, address, items, kicker=None, notes=None):
+        s, y = self._content(title, kicker)
+        t = self.t
+        mw = 6.6
+        self._photo(s, X0, y, mw, Y_END - y, "Peta lokasi (tempel tangkapan layar Google Maps)")
+        x = X0 + mw + 0.6
+        k.text(s, x, y + 0.05, X1 - x, 0.4, "Alamat", size=13, bold=True, color=t.accent,
+               caps=True, spacing=1.5)
+        k.text(s, x, y + 0.5, X1 - x, 1.2, address, size=17, color=t.primary,
+               line_spacing=1.3, font="+mj-lt")
+        yy = y + 1.95
+        for ic, label in items:
+            t.icon_disc(s, ic, x, yy, 0.55)
+            k.text(s, x + 0.75, yy, X1 - x - 0.75, 0.55, label, size=15, color=t.text,
+                   anchor="m")
+            yy += 0.78
         return s

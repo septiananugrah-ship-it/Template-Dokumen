@@ -421,5 +421,44 @@ class Pasir(Elegan):
     badge_fill = "dk1"
 
 
+def variant(key, label, colors, base=Elegan, **attrs):
+    """Buat tema elegan baru hanya dari palet + beberapa atribut."""
+    defaults = dict(key=key, name=label, label=label, colors=colors, primary="dk2",
+                    accent="accent1", grid="accent6", series=("dk2", "accent1", "accent3",
+                                                              "accent5"),
+                    divider_bg="dk2", closing_bg="dk2", divider_sub="accent5", disc_fill="lt1")
+    defaults.update(attrs)
+    return type(label.replace(" ", ""), (base,), defaults)()
+
+
+def _pal(dk1, dk2, lt2, a1, a3, a4, a5, a6):
+    return dict(dk1=dk1, lt1="FFFFFF", dk2=dk2, lt2=lt2, accent1=a1, accent2=dk2, accent3=a3,
+                accent4=a4, accent5=a5, accent6=a6, hlink=a1, folHlink=a4)
+
+
+GRAFIT = variant("grafit", "Grafit", _pal("1F2124", "2B2E33", "F1F2F3", "6B7280", "A3A8B0",
+                                          "6B6F76", "D1D4D8", "E3E5E8"),
+                 head_font="Calibri", body_font="Calibri", card_radius=0.06, motif="square",
+                 cover_style="split")
+TEAL = variant("teal", "Teal", _pal("10302E", "134E4A", "EDF5F4", "2F7F78", "8FC1BB",
+                                    "5D706E", "C7E0DD", "DCEBEA"),
+               head_font="Cambria", body_font="Calibri", card_radius=0.16, motif="ring",
+               cover_style="circle", title_bold=False)
+CHAMPAGNE = variant("champagne", "Champagne", _pal("2C2720", "2C2720", "F7F3EC", "B08D57",
+                                                    "D8C3A0", "7C7166", "EADCC6", "EFE6D8"),
+                    head_font="Cambria", body_font="Calibri", card_radius=0.0,
+                    card_line="accent6", surface="lt1", motif="corner", cover_style="framed",
+                    title_bold=False, primary="dk1", series=("dk1", "accent1", "accent3",
+                                                             "accent5"))
+INDIGO = variant("indigo", "Indigo", _pal("1C1A3A", "2E2A5A", "F0EFF7", "5B54A0", "A7A2D6",
+                                          "686580", "D2CFEA", "E2E0F1"),
+                 head_font="Calibri", body_font="Calibri", card_radius=0.12, motif="corner",
+                 cover_style="split")
+BATA = variant("bata", "Bata", _pal("2A1C18", "6B2F22", "F6F0EE", "9A4A38", "C89A8D", "7A6A65",
+                                    "E6D2CC", "EEE2DE"),
+               head_font="Cambria", body_font="Calibri", card_radius=0.2, motif="rule",
+               cover_style="split", title_bold=False)
+
 THEMES = [Monokrom(), HitamEmas(), Navy(), Batu(), Zaitun()]
+PROFIL = [GRAFIT, TEAL, CHAMPAGNE, INDIGO, BATA]
 KULIAH = [Marun(), Slate(), Hutan(), Malam(), Pasir()]
