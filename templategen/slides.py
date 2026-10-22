@@ -749,3 +749,94 @@ class Builder:
                    anchor="m")
             yy += 0.78
         return s
+
+    # ------------------------------------------------------------ tambahan materi ajar
+    def big_question(self, title, question, hint=None, kicker=None, notes=None):
+        """Pertanyaan pemantik: satu pertanyaan besar di tengah."""
+        s, y = self._content(title, kicker)
+        t = self.t
+        t.card(s, X0, y, W, Y_END - y, name="Pertanyaan")
+        k.icon(s, t, "circle-help", X0 + W / 2 - 0.45, y + 0.4, 0.9, t.accent)
+        k.text(s, X0 + 0.8, y + 1.45, W - 1.6, 2.0, question, size=32, color=t.primary,
+               font="+mj-lt", align="c", anchor="m", line_spacing=1.15)
+        if hint:
+            k.text(s, X0 + 0.8, Y_END - 1.0, W - 1.6, 0.6, hint, size=15, italic=True,
+                   color=t.muted, align="c")
+        return s
+
+    def quiz(self, title, question, options, answer=None, kicker=None, notes=None):
+        """Soal pilihan ganda A–D; bila `answer` diisi, pilihan itu disorot."""
+        s, y = self._content(title, kicker)
+        t = self.t
+        k.text(s, X0, y, W, 1.0, question, size=24, color=t.primary, font="+mj-lt",
+               line_spacing=1.15)
+        oy = y + 1.25
+        gap = 0.3
+        cw = (W - gap) / 2
+        ch = (Y_END - oy - gap) / 2
+        for i, opt in enumerate(options):
+            r, c = divmod(i, 2)
+            x, yy = X0 + c * (cw + gap), oy + r * (ch + gap)
+            letter = "ABCD"[i]
+            right = answer == letter
+            if right:
+                k.rrect(s, x, yy, cw, ch, t.primary if not t.dark else "accent1",
+                        radius=t.card_radius, name=f"Pilihan {letter} (benar)")
+                ink = "lt1" if not t.dark else "dk1"
+            else:
+                t.card(s, x, yy, cw, ch, name=f"Pilihan {letter}")
+                ink = t.text
+            t.badge(s, x + 0.35, yy + ch / 2 - 0.35, 0.7, letter, size=18,
+                    fill=(("dk1" if t.dark else "lt1") if right else None),
+                    color=(("accent1" if t.dark else t.primary) if right else None))
+            k.text(s, x + 1.3, yy, cw - 1.6, ch, opt, size=18, color=ink, anchor="m")
+            if right:
+                k.icon(s, t, "circle-check", x + cw - 0.75, yy + ch / 2 - 0.25, 0.5, ink)
+        return s
+
+    def example(self, title, problem, steps, result, kicker=None, notes=None):
+        """Contoh soal + langkah pembahasan."""
+        s, y = self._content(title, kicker)
+        t = self.t
+        lw = 5.0
+        t.card(s, X0, y, lw, Y_END - y, name="Soal")
+        k.text(s, X0 + 0.4, y + 0.35, lw - 0.8, 0.4, "Soal", size=13, bold=True,
+               color=t.accent, caps=True, spacing=1.5)
+        k.text(s, X0 + 0.4, y + 0.8, lw - 0.8, Y_END - y - 1.1, problem, size=17,
+               color=t.text, line_spacing=1.3)
+        x = X0 + lw + 0.5
+        k.text(s, x, y, X1 - x, 0.4, "Pembahasan", size=13, bold=True, color=t.accent,
+               caps=True, spacing=1.5)
+        yy = y + 0.55
+        step = (Y_END - yy - 0.95) / len(steps)
+        for i, st in enumerate(steps, 1):
+            t.badge(s, x, yy + 0.02, 0.45, str(i), size=12)
+            k.text(s, x + 0.65, yy, X1 - x - 0.65, step - 0.05, st, size=16, color=t.text,
+                   line_spacing=1.2)
+            yy += step
+        box = k.rrect(s, x, Y_END - 0.8, X1 - x, 0.8, t.primary if not t.dark else "accent1",
+                      radius=t.card_radius, name="Jawaban akhir")
+        k.text(s, x + 0.3, Y_END - 0.8, X1 - x - 0.6, 0.8, result, size=18, bold=True,
+               color="lt1" if not t.dark else "dk1", anchor="m")
+        return s
+
+    def reflection(self, title, prompts, kicker=None, notes=None):
+        """Refleksi akhir pelajaran: tiga pertanyaan dengan ruang jawaban."""
+        s, y = self._content(title, kicker)
+        t = self.t
+        n = len(prompts)
+        gap = 0.35
+        cw = (W - gap * (n - 1)) / n
+        h = Y_END - y
+        for i, (ic, prompt) in enumerate(prompts):
+            x = X0 + i * (cw + gap)
+            t.card(s, x, y, cw, h, name=f"Refleksi {i + 1}")
+            t.icon_disc(s, ic, x + 0.4, y + 0.4, 0.75)
+            k.text(s, x + 0.4, y + 1.4, cw - 0.8, 1.2, prompt, size=18, bold=True,
+                   color=t.primary, line_spacing=1.2)
+            for j in range(4):
+                ly = y + 2.9 + j * 0.6
+                if ly < Y_END - 0.3:
+                    k.line(s, x + 0.4, ly, x + cw - 0.4, ly, t.grid, 0.75,
+                           dash=MSO_LINE_DASH_STYLE.DASH, name="Garis jawaban")
+        return s

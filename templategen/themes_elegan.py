@@ -459,6 +459,34 @@ BATA = variant("bata", "Bata", _pal("2A1C18", "6B2F22", "F6F0EE", "9A4A38", "C89
                head_font="Cambria", body_font="Calibri", card_radius=0.2, motif="rule",
                cover_style="split", title_bold=False)
 
+LANGIT = variant("langit", "Langit", _pal("1B2B3D", "234A6E", "EEF4F9", "3E78AD", "93BBDF",
+                                          "5D6E80", "CFE0F0", "DFEAF4"),
+                 head_font="Calibri", body_font="Calibri", card_radius=0.2, motif="ring",
+                 cover_style="circle")
+DAUN = variant("daun", "Daun", _pal("1A2A1F", "25523A", "EEF5F0", "3D7D57", "93C2A5", "5E6F65",
+                                    "CDE4D6", "DEEDE3"),
+               head_font="Calibri", body_font="Calibri", card_radius=0.2, motif="rule",
+               cover_style="split")
+SENJA = variant("senja", "Senja", _pal("2E211B", "7A3F2A", "F8F0EC", "B4654A", "DDA894", "7D6C65",
+                                       "EFD8CF", "F3E5DF"),
+                head_font="Cambria", body_font="Calibri", card_radius=0.16, motif="square",
+                cover_style="framed", title_bold=False)
+LAVENDER = variant("lavender", "Lavender", _pal("221D33", "3F3466", "F2F0F8", "6A5BA6",
+                                                "B0A6D8", "6C6782", "D8D2EE", "E6E2F4"),
+                   head_font="Calibri", body_font="Calibri", card_radius=0.24, motif="corner",
+                   cover_style="circle")
+KAPUR = variant("kapur", "Papan Kapur", dict(_pal("17221E", "1F2E28", "26382F", "E9C46A",
+                                                  "C9D6CF", "A7B5AE", "4B6157", "33463D"),
+                                             lt1="F3F1EA"),
+                head_font="Cambria", body_font="Calibri", card_radius=0.08, motif="corner",
+                cover_style="framed", title_bold=False, dark=True, bg="dk1", surface="dk2",
+                text="lt1", primary="lt1", on_accent="dk1", card_line="accent6",
+                series=("accent1", "accent3", "accent4", "accent5"), photo_fill="dk2",
+                photo_ink="accent4", badge_fill="accent1", badge_ink="dk1", disc_fill="dk1",
+                disc_ink="accent1", divider_bg="dk2", closing_bg="dk2", divider_sub="accent4",
+                hi="accent1")
+
 THEMES = [Monokrom(), HitamEmas(), Navy(), Batu(), Zaitun()]
+GURU = [LANGIT, DAUN, SENJA, LAVENDER, KAPUR]
 PROFIL = [GRAFIT, TEAL, CHAMPAGNE, INDIGO, BATA]
 KULIAH = [Marun(), Slate(), Hutan(), Malam(), Pasir()]
