@@ -81,10 +81,11 @@ def build_docs(slug, mod, pkg, out, prod, mk, tmp, fast):
 
 def build_slides(slug, pkg, out, prod, mk, tmp, fast):
     content = importlib.import_module(f"paket.{slug}.content")
+    themes = getattr(content, "THEMES", THEMES)
 
     renders = {}  # (deck, theme) -> list[PIL.Image]
     for deck_name, _label, specs, meta in content.DECKS:
-        for t in THEMES:
+        for t in themes:
             folder = prod / f"Tema {t.label}"
             folder.mkdir(exist_ok=True)
             pptx = folder / f"{deck_name}_{t.key}.pptx"
@@ -101,18 +102,18 @@ def build_slides(slug, pkg, out, prod, mk, tmp, fast):
     for name, body in pkg["docs"].items():
         (prod / name).write_text(body.strip() + "\n", encoding="utf-8")
     main_deck = content.DECKS[0][0]
-    covers = [renders[(main_deck, t.key)][0] for t in THEMES]
+    covers = [renders[(main_deck, t.key)][0] for t in themes]
     mockup.cover_square(pkg, covers, mk / "01-foto-utama.jpg")
     mockup.banner(pkg, covers, mk / "02-banner-gumroad.jpg")
     picks = pkg["showcase"]
-    for i, t in enumerate(THEMES):
+    for i, t in enumerate(themes):
         slides = renders[(main_deck, t.key)]
         mockup.theme_square(pkg, t, [slides[j] for j in picks[:3]],
                             mk / f"{i + 3:02d}-tema-{t.key}.jpg")
-    grid = [[renders[(main_deck, t.key)][j] for j in pkg["grid"]] for t in THEMES]
-    mockup.contents_square(pkg, grid, mk / f"{len(THEMES) + 3:02d}-isi-paket.jpg")
-    mockup.preview_pdf([[renders[(main_deck, t.key)][j] for j in pkg["preview"]] for t in THEMES],
-                       [t.label for t in THEMES], mk / f"Pratinjau-{pkg['folder']}.pdf",
+    grid = [[renders[(main_deck, t.key)][j] for j in pkg["grid"]] for t in themes]
+    mockup.contents_square(pkg, grid, mk / f"{len(themes) + 3:02d}-isi-paket.jpg")
+    mockup.preview_pdf([[renders[(main_deck, t.key)][j] for j in pkg["preview"]] for t in themes],
+                       [t.label for t in themes], mk / f"Pratinjau-{pkg['folder']}.pdf",
                        pkg["title"])
 
 

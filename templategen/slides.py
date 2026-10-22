@@ -43,6 +43,11 @@ class Builder:
         y = self.t.frame(slide, title, kicker, self.page, self.meta)
         return slide, y
 
+    def _panel(self):
+        """Tema dengan kartu warna-warni memakai panel netral di belakang grafik
+        agar batang grafik tidak menyatu dengan warna kartu."""
+        return "lt1" if getattr(self.t, "neutral_panel", False) else None
+
     # ------------------------------------------------------------ halaman khusus
     def cover(self, notes=None, **d):
         s = k.blank_slide(self.prs, self.t, self.t.cover_bg)
@@ -253,7 +258,7 @@ class Builder:
         s, y = self._content(title, kicker)
         t = self.t
         cw = 7.7
-        t.card(s, X0, y, cw, Y_END - y, i=0, name="Panel grafik")
+        t.card(s, X0, y, cw, Y_END - y, i=0, name="Panel grafik", fill=self._panel())
         if chart_title:
             k.text(s, X0 + 0.35, y + 0.2, cw - 0.7, 0.4, chart_title, size=14, bold=True,
                    color=t.primary)
@@ -280,7 +285,7 @@ class Builder:
         t = self.t
         lw = 5.0
         h = Y_END - y
-        t.card(s, X0, y, lw, h, i=0, name="Panel diagram lingkar")
+        t.card(s, X0, y, lw, h, i=0, name="Panel diagram lingkar", fill=self._panel())
         k.text(s, X0 + 0.35, y + 0.2, lw - 0.7, 0.4, pie["title"], size=14, bold=True,
                color=t.primary)
         k.chart(s, t, XL_CHART_TYPE.DOUGHNUT, X0 + 0.2, y + 0.65, lw - 0.4, h - 0.85,
@@ -289,7 +294,7 @@ class Builder:
                 label_color=("dk1" if t.dark else "lt1"))
         x = X0 + lw + 0.35
         rw = X1 - x
-        t.card(s, x, y, rw, h, i=1, name="Panel grafik garis")
+        t.card(s, x, y, rw, h, i=1, name="Panel grafik garis", fill=self._panel())
         k.text(s, x + 0.35, y + 0.2, rw - 0.7, 0.4, line["title"], size=14, bold=True,
                color=t.primary)
         k.chart(s, t, XL_CHART_TYPE.LINE_MARKERS, x + 0.2, y + 0.65, rw - 0.4, h - 0.85,
@@ -413,4 +418,83 @@ class Builder:
             bar = k.rrect(s, X0 + label_w + start * cw + 0.06, yy + rh * 0.22,
                           (end - start + 1) * cw - 0.12, rh * 0.56,
                           t.series[i % len(t.series)], radius=rh * 0.28, name=f"Durasi {name}")
+        return s
+
+    # ------------------------------------------------------------ tambahan paket kuliah
+    def team(self, title, members, kicker=None, notes=None):
+        s, y = self._content(title, kicker)
+        t = self.t
+        n = len(members)
+        gap = 0.3
+        cw = (W - gap * (n - 1)) / n
+        h = Y_END - y
+        for i, (name, nim, role) in enumerate(members):
+            x = X0 + i * (cw + gap)
+            t.card(s, x, y, cw, h, i=i, name=f"Anggota {i + 1}")
+            d = min(1.5, cw - 0.8)
+            t.icon_disc(s, "user", x + (cw - d) / 2, y + 0.45, d, i=i)
+            k.text(s, x + 0.15, y + d + 0.7, cw - 0.3, 0.8, name, size=17, bold=True,
+                   color=t.primary, align="c", font="+mj-lt", line_spacing=1.0, anchor="b")
+            k.text(s, x + 0.15, y + d + 1.55, cw - 0.3, 0.35, nim, size=13, color=t.muted,
+                   align="c")
+            k.text(s, x + 0.15, y + d + 2.0, cw - 0.3, 0.4, role, size=13, bold=True,
+                   color=t.accent, align="c", caps=True, spacing=1)
+        return s
+
+    def quotes(self, title, items, kicker=None, notes=None):
+        s, y = self._content(title, kicker)
+        t = self.t
+        n = len(items)
+        gap = 0.35
+        cw = (W - gap * (n - 1)) / n
+        h = Y_END - y
+        for i, (quote, author) in enumerate(items):
+            x = X0 + i * (cw + gap)
+            t.card(s, x, y, cw, h, i=i, name=f"Definisi {i + 1}")
+            k.icon(s, t, "quote", x + 0.4, y + 0.4, 0.6, t.accent)
+            k.text(s, x + 0.4, y + 1.2, cw - 0.8, h - 2.2, quote, size=16, italic=True,
+                   color=t.text, line_spacing=1.3)
+            k.text(s, x + 0.4, Y_END - 0.85, cw - 0.8, 0.5, author, size=15, bold=True,
+                   color=t.primary, font="+mj-lt")
+        return s
+
+    def timeline(self, title, items, kicker=None, notes=None):
+        s, y = self._content(title, kicker)
+        t = self.t
+        n = len(items)
+        cw = W / n
+        mid = y + (Y_END - y) / 2
+        k.line(s, X0, mid, X1, mid, t.grid, 3.0, name="Garis waktu")
+        for i, (year, head, desc) in enumerate(items):
+            cx = X0 + i * cw + cw / 2
+            d = 0.36
+            k.oval(s, cx - d / 2, mid - d / 2, d, d, t.series[i % len(t.series)],
+                   line=t.bg, line_w=3, name=f"Titik {year}")
+            up = i % 2 == 0
+            ty = mid - 2.15 if up else mid + 0.45
+            ty = mid - 2.3 if up else mid + 0.45
+            k.text(s, cx - cw / 2 + 0.05, ty, cw - 0.1, 0.6, year, size=30, bold=True,
+                   color=t.primary, align="c", font="+mj-lt")
+            k.text(s, cx - cw / 2 + 0.05, ty + 0.65, cw - 0.1, 0.4, head, size=17, bold=True,
+                   color=t.accent if not getattr(t, "FILLS", None) else t.primary, align="c")
+            k.text(s, cx - cw / 2 + 0.05, ty + 1.08, cw - 0.1, 0.75, desc, size=14,
+                   color=t.muted, align="c", line_spacing=1.1)
+        return s
+
+    def compare(self, title, left, right, kicker=None, notes=None):
+        s, y = self._content(title, kicker)
+        t = self.t
+        gap = 0.9
+        cw = (W - gap) / 2
+        h = Y_END - y
+        for ci, (ic, head, items) in enumerate((left, right)):
+            x = X0 + ci * (cw + gap)
+            t.card(s, x, y, cw, h, i=ci, name=head)
+            t.icon_disc(s, ic, x + 0.4, y + 0.35, 0.7, i=ci)
+            k.text(s, x + 1.3, y + 0.35, cw - 1.6, 0.7, head, size=22, bold=True,
+                   color=t.primary, anchor="m", font="+mj-lt")
+            k.bullets(s, x + 0.45, y + 1.4, cw - 0.9, h - 1.6, items, size=16, color=t.text,
+                      bullet_color=t.series[ci], para_after=12, line_spacing=1.2)
+        d = 0.8
+        t.badge(s, X0 + cw + (gap - d) / 2, y + h / 2 - d / 2, d, "VS", size=18)
         return s
