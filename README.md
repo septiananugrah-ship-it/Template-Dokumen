@@ -13,7 +13,7 @@ Semua file dibuat otomatis dari kode Python, jadi desain konsisten dan mudah dip
 | 2 | [Template CV ATS & Surat Lamaran](preview/cv_ats/) | 5 desain CV + 5 surat lamaran, Word (.docx) + PDF | ✅ Selesai (v1.0) |
 | 3 | [Template PPT Presentasi Tugas Kuliah](preview/tugas_kuliah/) | 5 tema baru (Ceria, Neo Brutal, Alam, Tekno, Retro) × 20 slide, PPTX + PDF | ✅ Selesai (v1.0) |
 | 4 | [Template Laporan Praktikum](preview/laporan_praktikum/) | 4 contoh (Kimia, Biologi, Fisika, Informatika) + 1 versi kosong, Word + PDF, daftar isi otomatis | ✅ Selesai (v1.0) |
-| 5 | Pitch Deck Bisnis / UMKM | 5 tema, slide investor & proposal usaha | ⏳ Antre |
+| 5 | [Template Pitch Deck Bisnis & UMKM](preview/pitch_deck/) | 5 tema elegan (Monokrom, Hitam Emas, Navy, Batu, Zaitun) × 17 slide, PPTX + PDF | ✅ Selesai (v1.0) |
 | 6 | Template Instagram Jualan | Feed & story 1080 px, PPTX bisa diedit | ⏳ Antre |
 | 7 | Notion Planner Kuliah | Template Notion + panduan impor | ⏳ Antre |
 
@@ -53,6 +53,7 @@ templategen/
   docx_kit.py             # helper dokumen Word ramah ATS (python-docx)
   themes.py               # 5 tema skripsi: Modern, Minimalis, Akademik Biru, Gelap Elegan, Pastel
   themes_kuliah.py        # 5 tema kuliah: Ceria, Neo Brutal, Alam, Tekno, Retro
+  themes_elegan.py        # tema elegan selaras (1 warna utama + netral), dasar paket PPT berikutnya
   slides.py               # tata letak slide isi (agenda, statistik, grafik, Gantt, ...)
   mockup.py               # foto produk & PDF pratinjau (slide 16:9 dan dokumen A4)
   render.py               # PPTX -> PDF -> PNG (LibreOffice + Poppler)
@@ -65,6 +66,8 @@ preview/                  # salinan mockup untuk dilihat di GitHub
 ```
 
 ## Catatan kualitas
+
+- Arah desain: **tema elegan & selaras** — satu warna utama + netral, semua kartu seragam, grafik bergradasi satu warna.
 
 - Warna slide memakai **warna tema PowerPoint**, jadi pembeli bisa ganti palet lewat Design > Variants > Colors.
 - Font slide hanya font bawaan Office (Calibri, Cambria, Arial), aman di laptop mana pun.

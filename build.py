@@ -78,7 +78,7 @@ def build_docs(slug, mod, pkg, out, prod, mk, tmp, fast):
     rows = [[pages[j] for _, _, pages in renders] for j in range(len(renders[0][2]))]
     mockup.doc_contents_square(pkg, rows, mk / f"{len(renders) + 3:02d}-isi-paket.jpg")
     mockup.doc_preview_pdf([(label, pages) for label, _, pages in renders],
-                           mk / f"Pratinjau-{pkg['folder']}.pdf", pkg["title"])
+                           mk / f"Pratinjau-{pkg['folder']}.pdf", pkg["title"], pkg)
 
 
 def build_slides(slug, pkg, out, prod, mk, tmp, fast):
@@ -116,7 +116,7 @@ def build_slides(slug, pkg, out, prod, mk, tmp, fast):
     mockup.contents_square(pkg, grid, mk / f"{len(themes) + 3:02d}-isi-paket.jpg")
     mockup.preview_pdf([[renders[(main_deck, t.key)][j] for j in pkg["preview"]] for t in themes],
                        [t.label for t in themes], mk / f"Pratinjau-{pkg['folder']}.pdf",
-                       pkg["title"])
+                       pkg["title"], pkg)
 
 
 def finish(slug, pkg, out, prod, mk, tmp, fast):

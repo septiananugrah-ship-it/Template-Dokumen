@@ -498,3 +498,142 @@ class Builder:
         d = 0.8
         t.badge(s, X0 + cw + (gap - d) / 2, y + h / 2 - d / 2, d, "VS", size=18)
         return s
+
+    # ------------------------------------------------------------ tambahan pitch deck
+    def _photo(self, s, x, y, w, h, label):
+        if hasattr(self.t, "photo"):
+            return self.t.photo(s, x, y, w, h, label=label)
+        return k.rrect(s, x, y, w, h, self.t.surface, radius=self.t.card_radius,
+                       name=f"{label} (Format Shape > Fill > Picture)")
+
+    def image_text(self, title, heading, points, photo="Foto produk", kicker=None,
+                   notes=None, lead=None):
+        s, y = self._content(title, kicker)
+        t = self.t
+        pw = 5.4
+        self._photo(s, X0, y, pw, Y_END - y, photo)
+        x = X0 + pw + 0.6
+        k.text(s, x, y + 0.05, X1 - x, 0.9, heading, size=24, bold=True, color=t.primary,
+               font="+mj-lt", line_spacing=1.05)
+        yy = y + 1.1
+        if lead:
+            k.text(s, x, yy, X1 - x, 0.9, lead, size=15, color=t.muted, line_spacing=1.25)
+            yy += 1.0
+        n = len(points)
+        step = (Y_END - yy) / n
+        for i, (ic, head, desc) in enumerate(points):
+            py = yy + i * step
+            t.icon_disc(s, ic, x, py, 0.6, i=i)
+            k.text(s, x + 0.85, py - 0.02, X1 - x - 0.85, 0.4, head, size=17, bold=True,
+                   color=t.primary)
+            k.text(s, x + 0.85, py + 0.38, X1 - x - 0.85, step - 0.45, desc, size=14,
+                   color=t.text, line_spacing=1.15)
+        return s
+
+    def market(self, title, levels, note=None, kicker=None, notes=None):
+        """TAM / SAM / SOM: lingkaran konsentris + keterangan."""
+        s, y = self._content(title, kicker)
+        t = self.t
+        h = Y_END - y
+        cx, cy = X0 + 2.6, y + h / 2
+        tones = list(t.series[:3])[::-1]
+        for i, (lvl, val, desc) in enumerate(levels):
+            r = h / 2 * (1 - i * 0.3)
+            k.oval(s, cx - r, cy - r, 2 * r, 2 * r, tones[i] if i else t.surface,
+                   line=t.grid if i == 0 else None, name=f"Lingkaran {lvl}")
+        k.text(s, cx - 1.0, cy - 0.35, 2.0, 0.7, levels[-1][0], size=18, bold=True,
+               color="lt1" if not t.dark else "dk1", align="c", anchor="m")
+        x = X0 + 6.0
+        rowh = h / len(levels)
+        for i, (lvl, val, desc) in enumerate(levels):
+            yy = y + i * rowh
+            k.text(s, x, yy + 0.1, 1.4, 0.5, lvl, size=16, bold=True, color=t.accent,
+                   spacing=1.5)
+            k.text(s, x + 1.4, yy, X1 - x - 1.4, 0.7, val, size=30, bold=True,
+                   color=t.primary, font="+mj-lt")
+            k.text(s, x + 1.4, yy + 0.7, X1 - x - 1.4, rowh - 0.8, desc, size=14,
+                   color=t.muted, line_spacing=1.15)
+            if i < len(levels) - 1:
+                k.line(s, x, yy + rowh - 0.08, X1, yy + rowh - 0.08, t.grid, 0.75,
+                       name="Pemisah")
+        if note:
+            k.text(s, X0, Y_END + 0.02, W, 0.3, note, size=10, italic=True, color=t.muted)
+        return s
+
+    def check_table(self, title, headers, rows, kicker=None, notes=None, highlight=1):
+        """Tabel perbandingan kompetitor: ✓ / – per fitur, kolom kita disorot."""
+        s, y = self._content(title, kicker)
+        t = self.t
+        n = len(headers)
+        first = 4.2
+        cw = (W - first) / (n - 1)
+        rh = min(0.62, (Y_END - y) / (len(rows) + 1))
+        hx = X0 + first + (highlight - 1) * cw
+        t.card(s, hx, y - 0.1, cw, rh * (len(rows) + 1) + 0.2, name="Sorotan kolom kita")
+        for j, hd in enumerate(headers):
+            x = X0 if j == 0 else X0 + first + (j - 1) * cw
+            k.text(s, x + (0 if j == 0 else 0.05), y, (first if j == 0 else cw - 0.1), rh,
+                   hd, size=14, bold=True, color=t.primary, align="l" if j == 0 else "c",
+                   anchor="m")
+        for i, row in enumerate(rows):
+            yy = y + (i + 1) * rh
+            k.line(s, X0, yy, X1, yy, t.grid, 0.75, name="Garis")
+            for j, val in enumerate(row):
+                x = X0 if j == 0 else X0 + first + (j - 1) * cw
+                if j and val in ("v", "x"):
+                    ic = "check" if val == "v" else "minus"
+                    col = t.accent if val == "v" else t.grid
+                    k.icon(s, t, ic, x + cw / 2 - 0.17, yy + rh / 2 - 0.17, 0.34, col)
+                else:
+                    k.text(s, x + (0 if j == 0 else 0.05), yy, (first if j == 0 else cw - 0.1),
+                           rh, val, size=14, color=t.text, align="l" if j == 0 else "c",
+                           anchor="m", bold=(j == highlight))
+        return s
+
+    def funds(self, title, amount, caption, uses, kicker=None, notes=None):
+        """Kebutuhan dana: angka besar + diagram penggunaan dana."""
+        s, y = self._content(title, kicker)
+        t = self.t
+        lw = 5.2
+        t.card(s, X0, y, lw, Y_END - y, name="Total dana")
+        k.text(s, X0 + 0.45, y + 0.45, lw - 0.9, 0.4, "Kebutuhan dana", size=13, bold=True,
+               color=t.muted, caps=True, spacing=1.5)
+        k.text(s, X0 + 0.45, y + 0.9, lw - 0.9, 1.2, amount, size=46, bold=True,
+               color=t.primary, font="+mj-lt")
+        k.text(s, X0 + 0.45, y + 2.2, lw - 0.9, Y_END - y - 2.5, caption, size=15,
+               color=t.text, line_spacing=1.3)
+        x = X0 + lw + 0.5
+        cats = [u[0] for u in uses]
+        vals = tuple(u[1] for u in uses)
+        k.chart(s, t, XL_CHART_TYPE.DOUGHNUT, x, y, 3.6, Y_END - y, cats, [("Dana", vals)],
+                colors=list(t.series), legend=None, number_format='0"%"', labels=False)
+        lx = x + 3.9
+        step = (Y_END - y) / len(uses)
+        for i, (cat, val, desc) in enumerate(uses):
+            yy = y + i * step + 0.1
+            k.oval(s, lx, yy + 0.12, 0.22, 0.22, t.series[i % len(t.series)],
+                   name="Penanda warna")
+            k.text(s, lx + 0.35, yy, X1 - lx - 0.35, 0.45,
+                   [[dict(text=f"{val}%  ", bold=True, color=t.primary),
+                     dict(text=cat, bold=True)]], size=15, color=t.text)
+            k.text(s, lx + 0.35, yy + 0.42, X1 - lx - 0.35, step - 0.5, desc, size=12,
+                   color=t.muted)
+        return s
+
+    def team_photo(self, title, members, kicker=None, notes=None):
+        s, y = self._content(title, kicker)
+        t = self.t
+        n = len(members)
+        gap = 0.4
+        cw = (W - gap * (n - 1)) / n
+        ph = min(cw, Y_END - y - 1.4)
+        for i, (name, role, bio) in enumerate(members):
+            x = X0 + i * (cw + gap)
+            self._photo(s, x + (cw - ph) / 2, y, ph, ph, "Foto")
+            k.text(s, x, y + ph + 0.15, cw, 0.45, name, size=17, bold=True, color=t.primary,
+                   align="c", font="+mj-lt")
+            k.text(s, x, y + ph + 0.55, cw, 0.35, role, size=12, bold=True, color=t.accent,
+                   align="c", caps=True, spacing=1.5)
+            k.text(s, x + 0.1, y + ph + 0.9, cw - 0.2, Y_END - (y + ph + 0.9), bio, size=12,
+                   color=t.muted, align="c", line_spacing=1.1)
+        return s

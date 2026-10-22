@@ -94,21 +94,36 @@ BG_TOP = (246, 244, 255)
 BG_BOT = (226, 222, 250)
 ACCENT = (255, 107, 74)
 
+# Palet mockup per paket: "ceria" (default) atau "elegan" (netral hitam-putih).
+PALETTES = {
+    "ceria": dict(ink=INK, top=BG_TOP, bot=BG_BOT, accent=ACCENT, on_accent=(255, 255, 255),
+                  banner=((36, 30, 92), (20, 16, 52)), sub=(90, 86, 120), soft=(201, 197, 236)),
+    "elegan": dict(ink=(22, 22, 22), top=(247, 247, 245), bot=(228, 227, 223),
+                   accent=(22, 22, 22), on_accent=(255, 255, 255),
+                   banner=((28, 28, 30), (12, 12, 14)), sub=(110, 110, 110),
+                   soft=(200, 200, 196)),
+}
+
+
+def pal(pkg):
+    return PALETTES[pkg.get("mockup", "ceria")]
+
 
 def cover_square(pkg, covers, out: Path, size=1080):
     """Foto utama: judul + kipas sampul semua tema."""
-    im = gradient((size, size), BG_TOP + (255,), BG_BOT + (255,))
+    P = pal(pkg) if isinstance(pkg, dict) else PALETTES["ceria"]
+    im = gradient((size, size), P['top'] + (255,), P['bot'] + (255,))
     d = ImageDraw.Draw(im)
-    pill(d, 70, 64, pkg["badge"], font(26), ACCENT, (255, 255, 255))
+    pill(d, 70, 64, pkg["badge"], font(26), P['accent'], P['on_accent'])
     y = 150
     for line in pkg["headline"]:
-        d.text((70, y), line, font=font(64), fill=INK)
+        d.text((70, y), line, font=font(64), fill=P['ink'])
         y += 76
-    d.text((70, y + 10), pkg["tagline"], font=font(30, "Regular"), fill=(90, 86, 120))
+    d.text((70, y + 10), pkg["tagline"], font=font(30, "Regular"), fill=P['sub'])
     x = 70
     f = font(22, "SemiBold")
     for feat in pkg["chips"]:
-        cw, _ = pill(d, x, y + 70, feat, f, (255, 255, 255), INK, padx=18, pady=10)
+        cw, _ = pill(d, x, y + 70, feat, f, (255, 255, 255), P['ink'], padx=18, pady=10)
         x += cw + 14
     n = len(covers)
     w = 540
@@ -143,13 +158,14 @@ def theme_square(pkg, theme, slides, out: Path, size=1080):
 
 def contents_square(pkg, grid_slides, out: Path, size=1080):
     """'Isi paket': daftar fitur + kisi slide."""
-    im = gradient((size, size), (255, 255, 255, 255), BG_TOP + (255,))
+    P = pal(pkg) if isinstance(pkg, dict) else PALETTES["ceria"]
+    im = gradient((size, size), (255, 255, 255, 255), P['top'] + (255,))
     d = ImageDraw.Draw(im)
-    d.text((70, 60), "Isi Paket", font=font(60), fill=INK)
+    d.text((70, 60), "Isi Paket", font=font(60), fill=P['ink'])
     y = 150
     for feat in pkg["features"]:
-        d.ellipse((72, y + 9, 92, y + 29), fill=ACCENT)
-        d.text((110, y), feat, font=font(28, "SemiBold"), fill=INK)
+        d.ellipse((72, y + 9, 92, y + 29), fill=P['accent'])
+        d.text((110, y), feat, font=font(28, "SemiBold"), fill=P['ink'])
         y += 50
     cols = len(grid_slides)
     gap = 18
@@ -166,29 +182,31 @@ def contents_square(pkg, grid_slides, out: Path, size=1080):
 
 def banner(pkg, covers, out: Path, w=1280, h=720):
     """Sampul Gumroad / Lynk.id (16:9)."""
-    im = gradient((w, h), (36, 30, 92, 255), (20, 16, 52, 255))
+    P = pal(pkg) if isinstance(pkg, dict) else PALETTES["ceria"]
+    im = gradient((w, h), P['banner'][0] + (255,), P['banner'][1] + (255,))
     d = ImageDraw.Draw(im)
-    pill(d, 70, 70, pkg["badge"], font(24), ACCENT, (255, 255, 255))
+    pill(d, 70, 70, pkg["badge"], font(24), P['accent'], P['on_accent'])
     y = 150
     for line in pkg["headline"]:
         d.text((70, y), line, font=font(58), fill=(255, 255, 255))
         y += 70
     for j, line in enumerate(wrap(d, pkg["tagline"], font(26, "Regular"), 520)):
-        d.text((70, y + 16 + j * 36), line, font=font(26, "Regular"), fill=(201, 197, 236))
+        d.text((70, y + 16 + j * 36), line, font=font(26, "Regular"), fill=P['soft'])
     for i, c in enumerate(covers[:3]):
         paste_card(im, c, (640 + i * 70, 120 + i * 150), 560, radius=14)
     im.convert("RGB").save(out, quality=92)
 
 
-def preview_pdf(pages_by_theme, labels, out: Path, title):
+def preview_pdf(pages_by_theme, labels, out: Path, title, pkg=None):
     """PDF pratinjau: per tema satu halaman berisi 6 slide + tanda air."""
+    P = pal(pkg) if isinstance(pkg, dict) else PALETTES["ceria"]
     pages = []
     W, H = 1754, 1240  # A4 lanskap ~150 dpi
     for (theme_label, slides) in zip(labels, pages_by_theme):
         pg = Image.new("RGBA", (W, H), (255, 255, 255, 255))
         d = ImageDraw.Draw(pg)
-        d.text((80, 60), title, font=font(40), fill=INK)
-        d.text((80, 116), f"Tema {theme_label}", font=font(28, "Regular"), fill=(90, 86, 120))
+        d.text((80, 60), title, font=font(40), fill=P['ink'])
+        d.text((80, 116), f"Tema {theme_label}", font=font(28, "Regular"), fill=P['sub'])
         cols, gap = 3, 30
         tw = (W - 160 - gap * (cols - 1)) // cols
         th = round(tw * 9 / 16)
@@ -213,18 +231,19 @@ def preview_pdf(pages_by_theme, labels, out: Path, title):
 
 def doc_cover_square(pkg, pages, out: Path, size=1080):
     """Foto utama untuk paket dokumen: judul + deretan halaman A4 bertumpuk."""
-    im = gradient((size, size), BG_TOP + (255,), BG_BOT + (255,))
+    P = pal(pkg) if isinstance(pkg, dict) else PALETTES["ceria"]
+    im = gradient((size, size), P['top'] + (255,), P['bot'] + (255,))
     d = ImageDraw.Draw(im)
-    pill(d, 70, 64, pkg["badge"], font(26), ACCENT, (255, 255, 255))
+    pill(d, 70, 64, pkg["badge"], font(26), P['accent'], P['on_accent'])
     y = 150
     for line in pkg["headline"]:
-        d.text((70, y), line, font=font(64), fill=INK)
+        d.text((70, y), line, font=font(64), fill=P['ink'])
         y += 76
-    d.text((70, y + 10), pkg["tagline"], font=font(30, "Regular"), fill=(90, 86, 120))
+    d.text((70, y + 10), pkg["tagline"], font=font(30, "Regular"), fill=P['sub'])
     x = 70
     f = font(22, "SemiBold")
     for feat in pkg["chips"]:
-        cw, _ = pill(d, x, y + 70, feat, f, (255, 255, 255), INK, padx=18, pady=10)
+        cw, _ = pill(d, x, y + 70, feat, f, (255, 255, 255), P['ink'], padx=18, pady=10)
         x += cw + 14
     n = len(pages)
     w = 330
@@ -254,13 +273,14 @@ def doc_design_square(pkg, label, accent, pages, out: Path, size=1080):
 
 def doc_contents_square(pkg, rows, out: Path, size=1080):
     """'Isi paket' untuk dokumen: fitur + kisi halaman (satu baris per jenis)."""
-    im = gradient((size, size), (255, 255, 255, 255), BG_TOP + (255,))
+    P = pal(pkg) if isinstance(pkg, dict) else PALETTES["ceria"]
+    im = gradient((size, size), (255, 255, 255, 255), P['top'] + (255,))
     d = ImageDraw.Draw(im)
-    d.text((70, 60), "Isi Paket", font=font(60), fill=INK)
+    d.text((70, 60), "Isi Paket", font=font(60), fill=P['ink'])
     y = 150
     for feat in pkg["features"]:
-        d.ellipse((72, y + 9, 92, y + 29), fill=ACCENT)
-        d.text((110, y), feat, font=font(28, "SemiBold"), fill=INK)
+        d.ellipse((72, y + 9, 92, y + 29), fill=P['accent'])
+        d.text((110, y), feat, font=font(28, "SemiBold"), fill=P['ink'])
         y += 50
     cols = max(len(r) for r in rows)
     gap = 20
@@ -279,29 +299,31 @@ def doc_contents_square(pkg, rows, out: Path, size=1080):
 
 
 def doc_banner(pkg, pages, out: Path, w=1280, h=720):
-    im = gradient((w, h), (36, 30, 92, 255), (20, 16, 52, 255))
+    P = pal(pkg) if isinstance(pkg, dict) else PALETTES["ceria"]
+    im = gradient((w, h), P['banner'][0] + (255,), P['banner'][1] + (255,))
     d = ImageDraw.Draw(im)
-    pill(d, 70, 70, pkg["badge"], font(24), ACCENT, (255, 255, 255))
+    pill(d, 70, 70, pkg["badge"], font(24), P['accent'], P['on_accent'])
     y = 150
     for line in pkg["headline"]:
         d.text((70, y), line, font=font(58), fill=(255, 255, 255))
         y += 70
     for j, line in enumerate(wrap(d, pkg["tagline"], font(26, "Regular"), 520)):
-        d.text((70, y + 16 + j * 36), line, font=font(26, "Regular"), fill=(201, 197, 236))
+        d.text((70, y + 16 + j * 36), line, font=font(26, "Regular"), fill=P['soft'])
     for i, pg in enumerate(pages[:3]):
         paste_card(im, pg, (680 + i * 150, 90 + i * 40), 330, radius=6, shadow=22)
     im.convert("RGB").save(out, quality=92)
 
 
-def doc_preview_pdf(groups, out: Path, title):
+def doc_preview_pdf(groups, out: Path, title, pkg=None):
     """Satu halaman per desain berisi semua halamannya + tanda air."""
+    P = pal(pkg) if isinstance(pkg, dict) else PALETTES["ceria"]
     pages = []
     W, H = 1754, 1240
     for label, imgs in groups:
         pg = Image.new("RGBA", (W, H), (255, 255, 255, 255))
         d = ImageDraw.Draw(pg)
-        d.text((80, 60), title, font=font(40), fill=INK)
-        d.text((80, 116), label, font=font(28, "Regular"), fill=(90, 86, 120))
+        d.text((80, 60), title, font=font(40), fill=P['ink'])
+        d.text((80, 116), label, font=font(28, "Regular"), fill=P['sub'])
         n = len(imgs)
         th = H - 300
         tw = round(th * 210 / 297)
