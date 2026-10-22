@@ -15,6 +15,7 @@ from templategen import render
 FONT = "Times New Roman"
 ROMAN = ["I", "II", "III", "IV", "V", "VI"]
 W = 21 - 4 - 3  # lebar isi (cm)
+IND = 1.0       # jarak nomor subjudul ke teks subjudul; isi subbab sejajar teks ini
 
 
 class Report:
@@ -23,40 +24,57 @@ class Report:
         self.accent = accent
 
     # ------------------------------------------------------------ blok dasar
-    def body(self, cont, text, indent=True, after=6):
+    def body(self, cont, text, indent=True, after=6, left=None):
+        """Paragraf isi. Di dalam subbab, seluruh paragraf digeser sejajar dengan
+        teks subjudul (bukan dengan nomornya), baris pertama menjorok 1,25 cm."""
         p = dk.para(cont, text, align="j", line=1.5, after=after)
+        pf = p.paragraph_format
+        pf.left_indent = Cm(self.left if left is None else left)
         if indent:
-            p.paragraph_format.first_line_indent = Cm(1.25)
+            pf.first_line_indent = Cm(1.25)
         return p
+
+    left = 0.0
 
     def bab(self, doc, n, title):
         p = dk.heading(doc, [(f"BAB {ROMAN[n - 1]}", {}), ("\n" + title, {})], 1, size=14,
                        bold=True, color="000000", align="c", after=18, line=1.5)
         p.paragraph_format.page_break_before = n > 1
+        self.left = 0.0
         self.toc.append((f"BAB {ROMAN[n - 1]} {title}", 1, title))
         return p
 
     def sub(self, doc, num, title):
-        dk.heading(doc, f"{num} {title}", 2, size=12, bold=True, color="000000", before=6,
-                   after=6, line=1.5)
+        p = dk.heading(doc, f"{num}\t{title}", 2, size=12, bold=True, color="000000",
+                       before=6, after=6, line=1.5)
+        pf = p.paragraph_format
+        pf.left_indent = Cm(IND)
+        pf.first_line_indent = Cm(-IND)
+        pf.tab_stops.add_tab_stop(Cm(IND))
+        self.left = IND
         self.toc.append((f"{num} {title}", 2, f"{num} {title}"))
 
     def numbered(self, doc, items, start=1, fmt="{}."):
         for i, it in enumerate(items, start):
             p = dk.para(doc, f"{fmt.format(i)}\t{it}", align="j", line=1.5, after=0)
             pf = p.paragraph_format
-            pf.left_indent = Cm(0.75)
+            pf.left_indent = Cm(self.left + 0.75)
             pf.first_line_indent = Cm(-0.75)
-            pf.tab_stops.add_tab_stop(Cm(0.75))
+            pf.tab_stops.add_tab_stop(Cm(self.left + 0.75))
 
     def caption(self, doc, text, before=6, after=6):
-        return dk.para(doc, text, align="c", bold=True, size=11, before=before, after=after,
-                       line=1.15, keep=True)
+        p = dk.para(doc, text, align="c", bold=True, size=11, before=before, after=after,
+                    line=1.15, keep=True)
+        p.paragraph_format.left_indent = Cm(self.left)
+        return p
 
     def table(self, doc, rows, widths=None, align=None):
         n = len(rows[0])
-        widths = widths or [W / n] * n
-        t = dk.layout_table(doc, widths, cell_margin=(0.08, 0.15, 0.08, 0.15))
+        avail = W - self.left
+        widths = widths or [avail / n] * n
+        widths = [w * avail / sum(widths) for w in widths]
+        t = dk.layout_table(doc, widths, cell_margin=(0.08, 0.15, 0.08, 0.15),
+                            indent_cm=self.left)
         for r, row in enumerate(rows):
             tr = t.rows[0] if r == 0 else dk.add_row(t, widths)
             for c, val in enumerate(row):
@@ -85,7 +103,8 @@ class Report:
         self.caption(doc, label, before=4, after=10)
 
     def code_box(self, doc, code):
-        t = dk.layout_table(doc, [W], cell_margin=(0.2, 0.3, 0.2, 0.3))
+        t = dk.layout_table(doc, [W - self.left], cell_margin=(0.2, 0.3, 0.2, 0.3),
+                            indent_cm=self.left)
         c = t.rows[0].cells[0]
         dk.shade(c, "F3F4F6")
         dk.cell_borders(c, "D0D4DA", 6)
@@ -132,6 +151,7 @@ class Report:
     def approval(self, doc):
         d = self.d
         dk.para(doc, "LEMBAR PENGESAHAN", size=14, bold=True, align="c", after=24)
+        self.left = 0.0
         self.body(doc, f"Laporan praktikum {d['mk']} percobaan {d['no']} yang berjudul "
                        f"“{d['judul']}” telah diperiksa dan disetujui oleh asisten "
                        f"praktikum.", indent=False, after=30)
@@ -200,7 +220,8 @@ class Report:
         self.sub(doc, "3.2", "Prosedur Kerja")
         self.numbered(doc, d["prosedur"])
         if d.get("code"):
-            dk.para(doc, "Kode program:", before=6, after=4, bold=True)
+            q = dk.para(doc, "Kode program:", before=6, after=4, bold=True)
+            q.paragraph_format.left_indent = Cm(self.left)
             self.code_box(doc, d["code"])
         # BAB IV
         self.bab(doc, 4, "HASIL DAN PEMBAHASAN")
@@ -214,7 +235,7 @@ class Report:
             self.sub(doc, "4.2", "Perhitungan")
             for h in d["hitung"]:
                 p = dk.para(doc, h, line=1.5)
-                p.paragraph_format.left_indent = Cm(0.75)
+                p.paragraph_format.left_indent = Cm(self.left + 0.75)
             num = 3
         self.sub(doc, f"4.{num}", "Pembahasan")
         for t in d["bahas"]:
@@ -230,6 +251,7 @@ class Report:
                        align="c", after=18)
         p.paragraph_format.page_break_before = True
         self.toc.append(("DAFTAR PUSTAKA", 1, "DAFTAR PUSTAKA"))
+        self.left = 0.0
         for ref in d["pustaka"]:
             q = dk.para(doc, ref, align="j", line=1.15, after=10)
             q.paragraph_format.left_indent = Cm(1.25)
@@ -238,6 +260,7 @@ class Report:
                        after=18)
         p.paragraph_format.page_break_before = True
         self.toc.append(("LAMPIRAN", 1, "LAMPIRAN"))
+        self.left = 0.0
         self.numbered(doc, ["Lembar data pengamatan sementara (ditandatangani asisten)",
                             "Jawaban tugas / pertanyaan pasca praktikum",
                             "Dokumentasi tambahan"])

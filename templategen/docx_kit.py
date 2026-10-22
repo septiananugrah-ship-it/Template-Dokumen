@@ -185,11 +185,17 @@ def bullet(container, text, size=None, color=None, after=1.5, bold_lead=True):
 
 # ---------------------------------------------------------------- tabel tata letak
 
-def layout_table(container, widths_cm, borders=False, cell_margin=(0.0, 0.0, 0.0, 0.0)):
+def layout_table(container, widths_cm, borders=False, cell_margin=(0.0, 0.0, 0.0, 0.0),
+                 indent_cm=None):
     t = container.add_table(rows=1, cols=len(widths_cm))
-    t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    t.alignment = WD_TABLE_ALIGNMENT.CENTER if indent_cm is None else WD_TABLE_ALIGNMENT.LEFT
     t.autofit = False
     tblPr = t._tbl.tblPr
+    if indent_cm is not None:
+        ind = OxmlElement("w:tblInd")
+        ind.set(qn("w:w"), str(int(indent_cm * 567)))
+        ind.set(qn("w:type"), "dxa")
+        insert_ordered(tblPr, ind)
     lay = OxmlElement("w:tblLayout")
     lay.set(qn("w:type"), "fixed")
     insert_ordered(tblPr, lay)
