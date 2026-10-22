@@ -20,11 +20,11 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Pasang LibreOffice, Poppler, dan font metrik Office
+      - name: Pasang LibreOffice (Impress + Writer), Poppler, dan font metrik Office
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            libreoffice-impress poppler-utils libcairo2 \
+            libreoffice-impress libreoffice-writer poppler-utils libcairo2 \
             fonts-crosextra-carlito fonts-crosextra-caladea fonts-liberation
 
       - name: Pasang dependensi Python

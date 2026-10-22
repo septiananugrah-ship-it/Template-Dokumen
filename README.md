@@ -36,7 +36,7 @@ Pratinjau yang sudah jadi bisa dilihat di folder [`preview/`](preview/).
 
 **Di komputer sendiri:**
 ```bash
-sudo apt install libreoffice-impress poppler-utils fonts-crosextra-carlito fonts-crosextra-caladea
+sudo apt install libreoffice-impress libreoffice-writer poppler-utils fonts-crosextra-carlito fonts-crosextra-caladea
 pip install -r requirements.txt
 python build.py                  # semua paket
 python build.py sidang_skripsi   # satu paket
