@@ -89,7 +89,10 @@ class Elegan(Theme):
 
     # ------------------------------------------------------------ halaman khusus
     def cover(self, slide, d):
-        top = d.get("brand") or d.get("kampus", "")
+        if "kampus" in d:  # sampul akademik: logo kampus + identitas penyaji
+            d = dict(d, brand=d["kampus"], tagline=None,
+                     meta=d.get("tahun", ""), _people=[d["nama"], d["nim"], d["pembimbing"]])
+        top = d.get("brand", "")
         if self.cover_style == "split":
             _photo(slide, self, 7.9, 0, 5.433, 7.5, label=d.get("photo", "Foto utama"))
             x, w = 0.8, 6.4
@@ -104,13 +107,24 @@ class Elegan(Theme):
             _photo(slide, self, 8.3, 1.3, 4.4, 4.4, MSO_SHAPE.OVAL,
                    label=d.get("photo", "Foto utama"))
             x, w = 0.8, 6.6
-        k.text(slide, x, 0.8, w, 0.4, top, size=13, bold=True, color=self.primary,
-               caps=True, spacing=2.5)
+        if d.get("_people"):
+            self.logo_slot(slide, x, 0.55, 0.8, fill=self.muted, color=self.muted)
+            k.text(slide, x + 0.95, 0.75, w - 0.95, 0.45, top, size=12, bold=True,
+                   color=self.primary, caps=True, spacing=2)
+        else:
+            k.text(slide, x, 0.8, w, 0.4, top, size=13, bold=True, color=self.primary,
+                   caps=True, spacing=2.5)
         k.text(slide, x, 2.05, w, 0.4, d["jenis"], size=12, bold=True, color=self.accent,
                caps=True, spacing=2.5)
         self.head(slide, x, 2.5, w, 2.4, d["judul"], size=42, line_spacing=1.02)
-        k.text(slide, x, 5.0, w - 0.6, 0.9, d.get("tagline", ""), size=16, color=self.muted,
-               line_spacing=1.25)
+        if d.get("_people"):
+            nm, nim, pb = d["_people"]
+            k.text(slide, x, 4.95, w - 0.4, 1.3, [[dict(text=nm, bold=True, size=17,
+                                                         color=self.primary)], nim, pb],
+                   size=13, color=self.muted, line_spacing=1.25)
+        else:
+            k.text(slide, x, 5.0, w - 0.6, 0.9, d.get("tagline", ""), size=16,
+                   color=self.muted, line_spacing=1.25)
         k.text(slide, x, 6.45, w, 0.4, d.get("meta", ""), size=11, color=self.muted)
 
     def divider(self, slide, num, title, subtitle):
@@ -280,4 +294,131 @@ class Zaitun(Elegan):
     disc_fill = "lt1"
 
 
+# ===================================================================== MARUN
+class Marun(Elegan):
+    key = "marun"
+    name = "Marun"
+    label = "Marun"
+    head_font = "Cambria"
+    body_font = "Calibri"
+    colors = dict(dk1="2A1A20", lt1="FFFFFF", dk2="5E2235", lt2="F5EFF1",
+                  accent1="8E3B55", accent2="5E2235", accent3="C08A9B", accent4="776A6F",
+                  accent5="E3CCD4", accent6="EADFE3", hlink="8E3B55", folHlink="776A6F")
+    primary = "dk2"
+    accent = "accent1"
+    grid = "accent6"
+    card_radius = 0.12
+    series = ("dk2", "accent1", "accent3", "accent5")
+    motif = "ring"
+    cover_style = "split"
+    title_bold = False
+    divider_bg = closing_bg = "dk2"
+    divider_sub = "accent5"
+    disc_fill = "lt1"
+
+
+# ===================================================================== SLATE
+class Slate(Elegan):
+    key = "slate"
+    name = "Slate"
+    label = "Slate"
+    head_font = "Calibri"
+    body_font = "Calibri"
+    colors = dict(dk1="1E2430", lt1="FFFFFF", dk2="334155", lt2="F1F4F7",
+                  accent1="5B7083", accent2="334155", accent3="94A3B8", accent4="64748B",
+                  accent5="CBD5E1", accent6="E2E8F0", hlink="5B7083", folHlink="64748B")
+    primary = "dk2"
+    accent = "accent1"
+    grid = "accent6"
+    card_radius = 0.06
+    series = ("dk2", "accent1", "accent3", "accent5")
+    motif = "square"
+    cover_style = "framed"
+    divider_bg = closing_bg = "dk2"
+    divider_sub = "accent5"
+    disc_fill = "lt1"
+
+
+# ===================================================================== HUTAN
+class Hutan(Elegan):
+    key = "hutan"
+    name = "Hutan"
+    label = "Hutan"
+    head_font = "Cambria"
+    body_font = "Calibri"
+    colors = dict(dk1="17261E", lt1="FFFFFF", dk2="1F3B2D", lt2="EEF3F0",
+                  accent1="3F6B53", accent2="1F3B2D", accent3="8CAE9A", accent4="5F6E66",
+                  accent5="C9D9CF", accent6="DCE6E0", hlink="3F6B53", folHlink="5F6E66")
+    primary = "dk2"
+    accent = "accent1"
+    grid = "accent6"
+    card_radius = 0.22
+    series = ("dk2", "accent1", "accent3", "accent5")
+    motif = "rule"
+    cover_style = "circle"
+    title_bold = False
+    divider_bg = closing_bg = "dk2"
+    divider_sub = "accent5"
+    disc_fill = "lt1"
+
+
+# ===================================================================== MALAM (gelap)
+class Malam(Elegan):
+    key = "malam"
+    name = "Biru Malam"
+    label = "Biru Malam"
+    head_font = "Calibri"
+    body_font = "Calibri"
+    colors = dict(dk1="0D1321", lt1="EEF2F8", dk2="16203A", lt2="1E2A47",
+                  accent1="8FB3E8", accent2="5C7FB8", accent3="C7D8F2", accent4="93A0B8",
+                  accent5="3E5687", accent6="2A3757", hlink="8FB3E8", folHlink="93A0B8")
+    dark = True
+    bg = "dk1"
+    surface = "dk2"
+    text = "lt1"
+    primary = "lt1"
+    accent = "accent1"
+    on_accent = "dk1"
+    grid = "accent6"
+    card_radius = 0.1
+    card_line = "accent6"
+    series = ("accent1", "accent2", "accent3", "accent5")
+    motif = "corner"
+    cover_style = "framed"
+    photo_fill = "dk2"
+    photo_ink = "accent4"
+    badge_fill = "accent1"
+    badge_ink = "dk1"
+    disc_fill = "dk1"
+    disc_ink = "accent1"
+    divider_sub = "accent4"
+
+
+# ===================================================================== PASIR (terang hangat)
+class Pasir(Elegan):
+    key = "pasir"
+    name = "Pasir"
+    label = "Pasir"
+    head_font = "Cambria"
+    body_font = "Calibri"
+    colors = dict(dk1="2B2622", lt1="FFFFFF", dk2="2B2622", lt2="F4F1EC",
+                  accent1="A0866B", accent2="2B2622", accent3="C9B8A3", accent4="7B7068",
+                  accent5="E3D9CD", accent6="E8E2DA", hlink="A0866B", folHlink="7B7068")
+    primary = "dk1"
+    accent = "accent1"
+    grid = "accent6"
+    card_radius = 0.0
+    card_line = "accent6"
+    surface = "lt1"
+    series = ("dk1", "accent1", "accent3", "accent5")
+    motif = "corner"
+    cover_style = "split"
+    title_bold = False
+    dark_divider = False
+    divider_bg = closing_bg = "lt2"
+    divider_sub = "accent4"
+    badge_fill = "dk1"
+
+
 THEMES = [Monokrom(), HitamEmas(), Navy(), Batu(), Zaitun()]
+KULIAH = [Marun(), Slate(), Hutan(), Malam(), Pasir()]

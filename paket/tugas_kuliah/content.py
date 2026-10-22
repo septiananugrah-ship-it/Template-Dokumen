@@ -1,5 +1,5 @@
 """Isi contoh paket Template Presentasi Tugas Kuliah (kelompok)."""
-from templategen.themes_kuliah import THEMES  # noqa: F401  (dipakai build.py)
+from templategen.themes_elegan import KULIAH as THEMES  # noqa: F401  (dipakai build.py)
 
 META = "Tugas Kelompok  ·  Mata Kuliah  ·  Kelompok 3"
 

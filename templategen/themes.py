@@ -111,7 +111,7 @@ class Modern(Theme):
     title_size = 34
     card_radius = 0.2
     grid = "accent6+40"
-    series = ("accent3", "accent1", "accent2", "accent5")
+    series = ("accent3", "accent1", "accent6", "dk2")
 
     def card(self, slide, x, y, w, h, i=0, fill=None, name="Kartu"):
         shp = super().card(slide, x, y, w, h, i, fill, name)
@@ -132,9 +132,8 @@ class Modern(Theme):
 
     def cover(self, slide, d):
         k.oval(slide, 7.6, -1.6, 7.4, 7.4, "accent3", name="Dekorasi")
-        k.oval(slide, 9.9, 3.6, 5.2, 5.2, "accent1", name="Dekorasi")
-        k.oval(slide, 7.3, 4.9, 1.3, 1.3, "accent2", name="Dekorasi")
-        k.oval(slide, 11.2, 0.9, 0.7, 0.7, "accent5", name="Dekorasi")
+        k.oval(slide, 9.9, 3.6, 5.2, 5.2, "accent3+35", name="Dekorasi")
+        k.oval(slide, 7.3, 4.9, 1.3, 1.3, "accent1", name="Dekorasi")
         self.logo_slot(slide, 0.8, 0.7, 0.85, fill="lt1+0", color="lt1")
         k.text(slide, 1.85, 0.82, 5, 0.6, [[dict(text=d["kampus"], bold=True)], d["fakultas"]],
                size=12, color="lt1", line_spacing=1.0)
@@ -158,8 +157,8 @@ class Modern(Theme):
 
     def closing(self, slide, d):
         k.oval(slide, -1.8, -2.2, 6.0, 6.0, "accent3", name="Dekorasi")
-        k.oval(slide, 10.6, 4.4, 4.6, 4.6, "accent1", name="Dekorasi")
-        k.oval(slide, 9.8, 1.0, 0.8, 0.8, "accent2", name="Dekorasi")
+        k.oval(slide, 10.6, 4.4, 4.6, 4.6, "accent3+35", name="Dekorasi")
+        k.oval(slide, 9.8, 1.0, 0.8, 0.8, "accent3+35", name="Dekorasi")
         self.head(slide, 1.5, 2.3, 10.3, 1.4, d["judul"], size=66, color="lt1", align="c")
         k.text(slide, 2.0, 3.75, 9.3, 0.6, d["sub"], size=18, color="accent6", align="c")
         x0 = 6.67 - 4.6
@@ -435,9 +434,10 @@ class Pastel(Theme):
     surface = "lt2"
     card_radius = 0.32
     grid = "accent6"
-    series = ("accent1", "accent2", "accent3", "accent5")
-    FILLS = ("accent1+80", "accent2+75", "accent3+75", "accent5+70")
-    INK = ("accent1", "accent2-25", "accent3-30", "accent5-35")
+    series = ("accent1", "accent1+45", "dk2", "accent1+70")
+    # satu warna untuk semua kartu & penanda agar selaras
+    FILLS = ("accent1+82",) * 4
+    INK = ("accent1",) * 4
 
     def card_fill(self, i):
         return self.FILLS[i % 4]
@@ -456,14 +456,14 @@ class Pastel(Theme):
 
     def _blobs(self, slide, layout="frame"):
         if layout == "frame":
-            k.oval(slide, 11.9, -1.0, 2.3, 2.3, "accent2+75", name="Gelembung")
-            k.oval(slide, 12.6, 0.9, 1.1, 1.1, "accent3+70", name="Gelembung")
+            k.oval(slide, 11.9, -1.0, 2.3, 2.3, "accent1+80", name="Gelembung")
+            k.oval(slide, 12.6, 0.9, 1.1, 1.1, "accent1+60", name="Gelembung")
         elif layout == "cover":
             k.oval(slide, 7.9, -1.3, 6.2, 6.2, "accent1+75", name="Gelembung")
-            k.oval(slide, 10.6, 3.6, 4.4, 4.4, "accent2+70", name="Gelembung")
-            k.oval(slide, 8.0, 4.6, 2.2, 2.2, "accent3+65", name="Gelembung")
-            k.oval(slide, 12.2, 2.75, 0.8, 0.8, "accent5+40", name="Gelembung")
-            k.oval(slide, -0.9, 6.3, 2.2, 2.2, "accent5+70", name="Gelembung")
+            k.oval(slide, 10.6, 3.6, 4.4, 4.4, "accent1+60", name="Gelembung")
+            k.oval(slide, 8.0, 4.6, 2.2, 2.2, "accent1+85", name="Gelembung")
+            k.oval(slide, 12.2, 2.75, 0.8, 0.8, "accent1+30", name="Gelembung")
+            k.oval(slide, -0.9, 6.3, 2.2, 2.2, "accent1+85", name="Gelembung")
 
     def frame(self, slide, title, kicker, page, meta):
         self._blobs(slide)
@@ -485,8 +485,8 @@ class Pastel(Theme):
         self.logo_slot(slide, 0.8, 0.7, 0.85)
         k.text(slide, 1.85, 0.8, 5, 0.7, [[dict(text=d["kampus"], bold=True)], d["fakultas"]],
                size=12, color="accent4")
-        pill = k.rrect(slide, 0.8, 2.05, 3.0, 0.42, "accent2+75", radius=0.21, name="Label")
-        k.text(slide, 0, 0, 0, 0, d["jenis"], size=12, bold=True, color="accent2-30", align="c",
+        pill = k.rrect(slide, 0.8, 2.05, 3.0, 0.42, "accent1+80", radius=0.21, name="Label")
+        k.text(slide, 0, 0, 0, 0, d["jenis"], size=12, bold=True, color="accent1", align="c",
                anchor="m", shape_obj=pill, caps=True, spacing=1)
         self.head(slide, 0.8, 2.7, 6.9, 2.4, d["judul"], size=36, line_spacing=1.02)
         card = k.rrect(slide, 0.8, 5.25, 5.6, 1.35, "lt1", radius=0.3, name="Kartu identitas")
@@ -497,22 +497,22 @@ class Pastel(Theme):
 
     def divider(self, slide, num, title, subtitle):
         k.oval(slide, 7.7, 0.6, 6.3, 6.3, "accent1+75", name="Gelembung")
-        k.oval(slide, 7.3, 4.9, 1.8, 1.8, "accent2+70", name="Gelembung")
-        k.oval(slide, 12.5, 0.2, 1.0, 1.0, "accent3+65", name="Gelembung")
+        k.oval(slide, 7.3, 4.9, 1.8, 1.8, "accent1+60", name="Gelembung")
+        k.oval(slide, 12.5, 0.2, 1.0, 1.0, "accent1+85", name="Gelembung")
         k.text(slide, 7.7, 0.6, 6.3, 6.3, num, size=150, bold=True, color="accent1", align="c",
                anchor="m", font="+mj-lt", name="Nomor bagian")
-        pill = k.rrect(slide, 0.8, 2.55, 1.7, 0.4, "accent2+75", radius=0.2, name="Label")
-        k.text(slide, 0, 0, 0, 0, "Bagian " + num, size=12, bold=True, color="accent2-30",
+        pill = k.rrect(slide, 0.8, 2.55, 1.7, 0.4, "accent1+80", radius=0.2, name="Label")
+        k.text(slide, 0, 0, 0, 0, "Bagian " + num, size=12, bold=True, color="accent1",
                align="c", anchor="m", shape_obj=pill, caps=True)
         self.head(slide, 0.8, 3.1, 6.6, 1.6, title, size=44, line_spacing=1.0)
         k.text(slide, 0.8, 4.75, 6.2, 1.0, subtitle, size=16, color="accent4")
 
     def closing(self, slide, d):
         k.oval(slide, -1.5, -1.8, 5.0, 5.0, "accent1+75", name="Gelembung")
-        k.oval(slide, 10.8, 4.2, 4.5, 4.5, "accent2+70", name="Gelembung")
-        k.oval(slide, 10.2, 0.6, 1.4, 1.4, "accent3+65", name="Gelembung")
-        k.oval(slide, 1.4, 5.6, 1.0, 1.0, "accent5+50", name="Gelembung")
-        k.icon(slide, self, "heart", 6.27, 1.2, 0.8, "accent2")
+        k.oval(slide, 10.8, 4.2, 4.5, 4.5, "accent1+60", name="Gelembung")
+        k.oval(slide, 10.2, 0.6, 1.4, 1.4, "accent1+85", name="Gelembung")
+        k.oval(slide, 1.4, 5.6, 1.0, 1.0, "accent1+40", name="Gelembung")
+        k.icon(slide, self, "heart", 6.27, 1.2, 0.8, "accent1")
         self.head(slide, 1.5, 2.2, 10.333, 1.4, d["judul"], size=64, align="c")
         k.text(slide, 2.0, 3.6, 9.333, 0.6, d["sub"], size=18, color="accent4", align="c")
         x0 = 6.67 - 4.65

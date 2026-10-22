@@ -1,7 +1,7 @@
 # Template PPT Presentasi Tugas Kuliah (5 Tema, Bisa Diedit)
 
 **Judul produk (Shopee):**
-Template PPT Presentasi Tugas Kuliah Kelompok 5 Tema Aesthetic Bisa Edit PowerPoint Canva
+Template PPT Presentasi Tugas Kuliah Kelompok 5 Tema Elegan Aesthetic Bisa Edit PowerPoint Canva
 
 **Harga saran:** Rp19.000 (coret Rp39.000) · Gumroad: $3
 
@@ -10,7 +10,7 @@ Template PPT Presentasi Tugas Kuliah Kelompok 5 Tema Aesthetic Bisa Edit PowerPo
 Dapat tugas presentasi kelompok mendadak? Template ini sudah lengkap dari sampul sampai sesi diskusi. Tinggal ganti teks dan bagi slide ke tiap anggota.
 
 ## Isi paket
-- **5 tema desain**: Ceria, Neo Brutal, Alam, Tekno (gelap), Retro
+- **5 tema elegan** dengan warna selaras: Marun, Slate, Hutan, Biru Malam (gelap), Pasir
 - **20 slide per tema** (total 100 slide): sampul, **anggota kelompok**, daftar isi, latar belakang, tujuan, **definisi menurut para ahli**, kartu ikon, **timeline**, grafik, **perbandingan VS**, diagram survei, studi kasus, tahapan, kesimpulan & saran, **pertanyaan diskusi**, daftar pustaka, terima kasih
 - Format **.pptx** + **PDF**
 - Panduan cara edit (bahasa Indonesia)

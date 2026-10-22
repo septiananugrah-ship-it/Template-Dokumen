@@ -4,13 +4,14 @@ PACKAGE = dict(
     title="Template PPT Presentasi Tugas Kuliah",
     short="Template PPT Tugas Kuliah",
     folder="Template-PPT-Tugas-Kuliah",
-    version="1.0",
-    badge="5 TEMA · 100 SLIDE",
+    version="1.1",
+    mockup="elegan",
+    badge="5 TEMA ELEGAN · 100 SLIDE",
     headline=["Template PPT", "Presentasi", "Tugas Kuliah"],
     tagline="Presentasi kelompok jadi rapi dalam hitungan menit.",
     chips=["PowerPoint · Google Slides · Canva", "Slide anggota kelompok"],
     features=[
-        "5 tema: Ceria, Neo Brutal, Alam, Tekno, Retro",
+        "5 tema elegan: Marun, Slate, Hutan, Biru Malam, Pasir",
         "20 slide per tema: anggota, definisi, timeline, VS",
         "Grafik & tabel asli PowerPoint, bisa diedit",
         "16:9 · .pptx + PDF · ganti warna 1 klik",
@@ -23,7 +24,7 @@ PACKAGE = dict(
 TEMPLATE PPT PRESENTASI TUGAS KULIAH
 ====================================
 
-Isi paket: 5 folder tema (Ceria, Neo Brutal, Alam, Tekno, Retro).
+Isi paket: 5 folder tema (Marun, Slate, Hutan, Biru Malam, Pasir).
 Tiap folder berisi Presentasi-Tugas-Kuliah_<tema>.pptx (20 slide) + PDF.
 
 Slide yang tersedia:
@@ -66,7 +67,7 @@ Ikon: Lucide (lisensi ISC).
 # Template PPT Presentasi Tugas Kuliah (5 Tema, Bisa Diedit)
 
 **Judul produk (Shopee):**
-Template PPT Presentasi Tugas Kuliah Kelompok 5 Tema Aesthetic Bisa Edit PowerPoint Canva
+Template PPT Presentasi Tugas Kuliah Kelompok 5 Tema Elegan Aesthetic Bisa Edit PowerPoint Canva
 
 **Harga saran:** Rp19.000 (coret Rp39.000) · Gumroad: $3
 
@@ -75,7 +76,7 @@ Template PPT Presentasi Tugas Kuliah Kelompok 5 Tema Aesthetic Bisa Edit PowerPo
 Dapat tugas presentasi kelompok mendadak? Template ini sudah lengkap dari sampul sampai sesi diskusi. Tinggal ganti teks dan bagi slide ke tiap anggota.
 
 ## Isi paket
-- **5 tema desain**: Ceria, Neo Brutal, Alam, Tekno (gelap), Retro
+- **5 tema elegan** dengan warna selaras: Marun, Slate, Hutan, Biru Malam (gelap), Pasir
 - **20 slide per tema** (total 100 slide): sampul, **anggota kelompok**, daftar isi, latar belakang, tujuan, **definisi menurut para ahli**, kartu ikon, **timeline**, grafik, **perbandingan VS**, diagram survei, studi kasus, tahapan, kesimpulan & saran, **pertanyaan diskusi**, daftar pustaka, terima kasih
 - Format **.pptx** + **PDF**
 - Panduan cara edit (bahasa Indonesia)

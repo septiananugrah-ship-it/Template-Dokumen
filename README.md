@@ -11,7 +11,7 @@ Semua file dibuat otomatis dari kode Python, jadi desain konsisten dan mudah dip
 |---|-------|-----|--------|
 | 1 | [Template PPT Sidang Skripsi & Seminar Proposal](preview/sidang_skripsi/) | 5 tema × (22 + 17 slide) = 195 slide, PPTX + PDF | ✅ Selesai (v1.0) |
 | 2 | [Template CV ATS & Surat Lamaran](preview/cv_ats/) | 5 desain CV + 5 surat lamaran, Word (.docx) + PDF | ✅ Selesai (v1.0) |
-| 3 | [Template PPT Presentasi Tugas Kuliah](preview/tugas_kuliah/) | 5 tema baru (Ceria, Neo Brutal, Alam, Tekno, Retro) × 20 slide, PPTX + PDF | ✅ Selesai (v1.0) |
+| 3 | [Template PPT Presentasi Tugas Kuliah](preview/tugas_kuliah/) | 5 tema elegan (Marun, Slate, Hutan, Biru Malam, Pasir) × 20 slide, PPTX + PDF | ✅ Selesai (v1.1) |
 | 4 | [Template Laporan Praktikum](preview/laporan_praktikum/) | 4 contoh (Kimia, Biologi, Fisika, Informatika) + 1 versi kosong, Word + PDF, daftar isi otomatis | ✅ Selesai (v1.0) |
 | 5 | [Template Pitch Deck Bisnis & UMKM](preview/pitch_deck/) | 5 tema elegan (Monokrom, Hitam Emas, Navy, Batu, Zaitun) × 17 slide, PPTX + PDF | ✅ Selesai (v1.0) |
 | 6 | Template Instagram Jualan | Feed & story 1080 px, PPTX bisa diedit | ⏳ Antre |
@@ -52,8 +52,7 @@ templategen/
   core.py                 # helper bentuk, teks, ikon, grafik, tabel (python-pptx)
   docx_kit.py             # helper dokumen Word ramah ATS (python-docx)
   themes.py               # 5 tema skripsi: Modern, Minimalis, Akademik Biru, Gelap Elegan, Pastel
-  themes_kuliah.py        # 5 tema kuliah: Ceria, Neo Brutal, Alam, Tekno, Retro
-  themes_elegan.py        # tema elegan selaras (1 warna utama + netral), dasar paket PPT berikutnya
+  themes_elegan.py        # tema elegan selaras (1 warna utama + netral): pitch deck, tugas kuliah, dst.
   slides.py               # tata letak slide isi (agenda, statistik, grafik, Gantt, ...)
   mockup.py               # foto produk & PDF pratinjau (slide 16:9 dan dokumen A4)
   render.py               # PPTX -> PDF -> PNG (LibreOffice + Poppler)
